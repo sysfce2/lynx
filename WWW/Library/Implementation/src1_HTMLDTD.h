@@ -1,4 +1,4 @@
-/* $LynxId: src1_HTMLDTD.h,v 1.51 2025/07/22 00:10:17 tom Exp $ */
+/* $LynxId: src1_HTMLDTD.h,v 1.52 2025/09/18 16:14:38 tom Exp $ */
 #ifndef src_HTMLDTD_H1
 #define src_HTMLDTD_H1 1
 
@@ -731,6 +731,7 @@ static const attr INPUT_attr_list[] = {
 	{ "CLEAR"         T(N) },
 	{ "DISABLED"      T(N) },
 	{ "ERROR"         T(N) },
+	{ "FORMACTION"    T(N) },
 	{ "HEIGHT"        T(N) },
 	{ "ISMAP"         T(N) },
 	{ "MAX"           T(N) },
@@ -1706,6 +1707,7 @@ static const attr INPUT_attr[] = {      /* INPUT attributes */
 	{ "DIR"           T(N) },
 	{ "DISABLED"      T(N) },
 	{ "ERROR"         T(N) },
+	{ "FORMACTION"    T(N) },
 	{ "HEIGHT"        T(N) },
 	{ "ID"            T(i) },
 	{ "ISMAP"         T(N) },

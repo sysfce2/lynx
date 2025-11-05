@@ -1,5 +1,5 @@
 /*
- * $LynxId: LYStructs.h,v 1.33 2025/01/06 17:14:30 tom Exp $
+ * $LynxId: LYStructs.h,v 1.35 2025/10/29 00:13:52 tom Exp $
  */
 #ifndef LYSTRUCTS_H
 #define LYSTRUCTS_H
@@ -35,9 +35,15 @@ extern "C" {
 	int anchor_line_num;	/* The anchor line number in the HText structure. */
 	HiliteList list;
 	struct _FormInfo *l_form;	/* Pointer to form info. */
+	char *submit_action;	/* override form action via formaction value */
     } LinkInfo;
     extern LinkInfo links[MAXLINKS];
     extern int nlinks;
+
+#define TraceNumLinks()		CTRACE((tfp, "%s@%d nlinks = %d\n", __FILE__, __LINE__, nlinks))
+#define ResetNumLinks()		do { nlinks = 0;    TraceNumLinks(); } while (0)
+#define AddToNumLinks(n)	do { nlinks += (n); TraceNumLinks(); } while (0)
+#define UpdateNumLinks()	do { nlinks++;      TraceNumLinks(); } while (0)
 
     typedef struct {
 	/* FIXME: see DocAddress */

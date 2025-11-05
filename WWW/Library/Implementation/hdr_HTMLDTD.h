@@ -1,4 +1,4 @@
-/* $LynxId: hdr_HTMLDTD.h,v 1.25 2022/09/28 22:26:32 tom Exp $ */
+/* $LynxId: hdr_HTMLDTD.h,v 1.26 2025/09/18 16:14:38 tom Exp $ */
 #ifndef hdr_HTMLDTD_H
 #define hdr_HTMLDTD_H 1
 
@@ -579,31 +579,32 @@ extern "C" {
 #define HTML_INPUT_DIR            8
 #define HTML_INPUT_DISABLED       9
 #define HTML_INPUT_ERROR         10
-#define HTML_INPUT_HEIGHT        11
-#define HTML_INPUT_ID            12
-#define HTML_INPUT_ISMAP         13
-#define HTML_INPUT_LANG          14
-#define HTML_INPUT_MAX           15
-#define HTML_INPUT_MAXLENGTH     16
-#define HTML_INPUT_MD            17
-#define HTML_INPUT_MIN           18
-#define HTML_INPUT_NAME          19
-#define HTML_INPUT_NOTAB         20
-#define HTML_INPUT_ONBLUR        21
-#define HTML_INPUT_ONCHANGE      22
-#define HTML_INPUT_ONFOCUS       23
-#define HTML_INPUT_ONSELECT      24
-#define HTML_INPUT_READONLY      25
-#define HTML_INPUT_SIZE          26
-#define HTML_INPUT_SRC           27
-#define HTML_INPUT_STYLE         28
-#define HTML_INPUT_TABINDEX      29
-#define HTML_INPUT_TITLE         30
-#define HTML_INPUT_TYPE          31
-#define HTML_INPUT_USEMAP        32
-#define HTML_INPUT_VALUE         33
-#define HTML_INPUT_WIDTH         34
-#define HTML_INPUT_ATTRIBUTES    35
+#define HTML_INPUT_FORMACTION    11
+#define HTML_INPUT_HEIGHT        12
+#define HTML_INPUT_ID            13
+#define HTML_INPUT_ISMAP         14
+#define HTML_INPUT_LANG          15
+#define HTML_INPUT_MAX           16
+#define HTML_INPUT_MAXLENGTH     17
+#define HTML_INPUT_MD            18
+#define HTML_INPUT_MIN           19
+#define HTML_INPUT_NAME          20
+#define HTML_INPUT_NOTAB         21
+#define HTML_INPUT_ONBLUR        22
+#define HTML_INPUT_ONCHANGE      23
+#define HTML_INPUT_ONFOCUS       24
+#define HTML_INPUT_ONSELECT      25
+#define HTML_INPUT_READONLY      26
+#define HTML_INPUT_SIZE          27
+#define HTML_INPUT_SRC           28
+#define HTML_INPUT_STYLE         29
+#define HTML_INPUT_TABINDEX      30
+#define HTML_INPUT_TITLE         31
+#define HTML_INPUT_TYPE          32
+#define HTML_INPUT_USEMAP        33
+#define HTML_INPUT_VALUE         34
+#define HTML_INPUT_WIDTH         35
+#define HTML_INPUT_ATTRIBUTES    36
 
 #define HTML_ISINDEX_ACTION       0
 #define HTML_ISINDEX_CLASS        1

@@ -1,5 +1,5 @@
 /*
- * $LynxId: GridText.c,v 1.356 2025/08/08 00:11:44 tom Exp $
+ * $LynxId: GridText.c,v 1.358 2025/10/31 08:15:47 tom Exp $
  *
  *		Character grid hypertext object
  *		===============================
@@ -2064,7 +2064,7 @@ static void display_page(HText *text,
 	}
 	LYaddstr("\n\nError accessing document!\nNo data available!\n");
 	LYrefresh();
-	nlinks = 0;		/* set number of links to 0 */
+	ResetNumLinks();
 	return;
     }
 #ifdef DISP_PARTIAL
@@ -2102,7 +2102,7 @@ static void display_page(HText *text,
 	    }
 	    LYaddstr("\n\nError drawing page!\nBad HText structure!\n");
 	    LYrefresh();
-	    nlinks = 0;		/* set number of links to 0 */
+	    ResetNumLinks();
 	    return;
 	}
 #else
@@ -2206,7 +2206,7 @@ static void display_page(HText *text,
 		}
 		LYaddstr("\n\nError drawing page!\nBad HText structure!\n");
 		LYrefresh();
-		nlinks = 0;	/* set number of links to 0 */
+		ResetNumLinks();
 		return;
 	    }
 #else
@@ -2344,7 +2344,7 @@ static void display_page(HText *text,
     /*
      * Add the anchors to Lynx structures.
      */
-    nlinks = 0;
+    ResetNumLinks();
     for (Anchor_ptr = text->first_anchor;
 	 Anchor_ptr != NULL && Anchor_ptr->line_num <= stop_before_for_anchors;
 	 Anchor_ptr = Anchor_ptr->next) {
@@ -2426,7 +2426,7 @@ static void display_page(HText *text,
 		links[nlinks].target = empty_string;
 		links[nlinks].l_form = NULL;
 
-		nlinks++;
+		UpdateNumLinks();
 		display_flag = TRUE;
 
 	    } else if (Anchor_ptr->link_type == INPUT_ANCHOR
@@ -2468,7 +2468,7 @@ static void display_page(HText *text,
 				FormInfo_ptr->value);
 		}
 
-		nlinks++;
+		UpdateNumLinks();
 		/*
 		 * Bold the link after incrementing nlinks.
 		 */
@@ -9643,6 +9643,16 @@ static BOOLEAN addFormAction(FormInfo * f)
 	if (HTCurrentForm->data.submit_title != NULL)
 	    StrAllocCopy(f->submit_title, HTCurrentForm->data.submit_title);
 	f->submit_method = HTCurrentForm->data.submit_method;
+	CTRACE((tfp, "addFormAction\n"
+		"\taction:%s\n"
+		"\tenctype:%s\n"
+		"\ttitle:%s\n"
+		"\tmethod:%d:%s\n",
+		NonNull(f->submit_action),
+		NonNull(f->submit_enctype),
+		NonNull(f->submit_title),
+		f->submit_method,
+		UrlMethod(f->submit_method)));
     }
     return result;
 }
@@ -9732,8 +9742,9 @@ void HText_beginForm(char *action,
     newform->data.submit_title = HTFormTitle;
     newform->accept_cs = HTFormAcceptCharset;
 
-    CTRACE((tfp, "BeginForm: action:%s Method:%d%s%s%s%s%s%s\n",
+    CTRACE((tfp, "BeginForm: action:%s Method:%d(%s)%s%s%s%s%s%s\n",
 	    HTFormAction, HTFormMethod,
+	    UrlMethod(HTFormMethod),
 	    (HTFormTitle ? " Title:" : ""),
 	    NonNull(HTFormTitle),
 	    (HTFormEnctype ? " Enctype:" : ""),
@@ -13072,7 +13083,7 @@ static void update_subsequent_anchors(int newlines,
     /*
      * Fixup various global variables.
      */
-    nlinks += newlines;
+    AddToNumLinks(newlines);
     HTMainText->Lines += newlines;
     HTMainText->last_anchor_number += newlines;
 

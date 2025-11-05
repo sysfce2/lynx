@@ -1,9 +1,12 @@
--- $LynxId: CHANGES,v 1.1250 2025/09/17 22:55:37 tom Exp $
+-- $LynxId: CHANGES,v 1.1252 2025/10/27 08:02:50 tom Exp $
 ===============================================================================
 Changes since Lynx 2.8 release
 ===============================================================================
 
 2025-09-17 (2.9.2u)
+* add a null pointer check to MakeFormAction (Debian #1119084) -TD
+* do not report the case of a SELECT tag not within a FORM as Bad HTML (report
+  by Jindrich Kolorenc) -TD
 * update wcwidth from xterm -TD
 * fix some inconsistencies in display of zero-width Unicode values (report by
   Russell Bell) -TD

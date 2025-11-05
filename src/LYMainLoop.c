@@ -1,5 +1,5 @@
 /*
- * $LynxId: LYMainLoop.c,v 1.258 2025/01/08 00:06:03 tom Exp $
+ * $LynxId: LYMainLoop.c,v 1.259 2025/10/27 08:00:28 tom Exp $
  */
 #include <HTUtils.h>
 #include <HTAccess.h>
@@ -1546,7 +1546,13 @@ static FormInfo *MakeFormAction(FormInfo * given, int submit)
 	    if (result->submit_action == NULL) {
 		PerFormInfo *pfi = HText_PerFormInfo(result->number);
 
-		*result = pfi->data;
+		if (pfi == NULL) {
+		    CTRACE((tfp,
+			    "MakeFormAction: form %d not in HTMainText's list!\n",
+			    result->number));
+		} else {
+		    *result = pfi->data;
+		}
 	    }
 	    result->type = F_SUBMIT_TYPE;
 	} else {

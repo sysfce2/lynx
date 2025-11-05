@@ -1,5 +1,5 @@
 /*
- * $LynxId: HTForms.h,v 1.34 2018/05/04 22:50:54 tom Exp $
+ * $LynxId: HTForms.h,v 1.36 2025/09/18 20:31:48 tom Exp $
  */
 #ifndef HTFORMS_H
 #define HTFORMS_H
@@ -53,6 +53,7 @@ extern "C" {
 	int name_cs;		/* charset handle for name */
 	int value_cs;		/* charset handle for value */
 	const char *accept_cs;
+	char *submit_action;	/* override form action via formaction value */
     } InputFieldData;
 
 /* The OptionType structure is for a linked list of option entries
@@ -85,7 +86,7 @@ extern "C" {
 	OptionType *select_list;	/* array of option choices */
 	char *submit_action;	/* form's action */
 	int submit_method;	/* form's method */
-	char *submit_enctype;	/* form's entype */
+	char *submit_enctype;	/* form's encoding-type */
 	char *submit_title;	/* form's title */
 	BOOL no_cache;		/* Always resubmit? */
 	char *cp_submit_value;	/* option value to submit */

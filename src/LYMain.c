@@ -1,5 +1,5 @@
 /*
- * $LynxId: LYMain.c,v 1.307 2025/08/03 21:51:26 tom Exp $
+ * $LynxId: LYMain.c,v 1.308 2025/10/29 00:15:39 tom Exp $
  */
 #include <HTUtils.h>
 #include <HTTP.h>
@@ -877,7 +877,7 @@ static void free_lynx_globals(void)
     FREE(UCAssume_MIMEcharset);
     LYUIPages_free();
     LYFreeHilites(0, nlinks);
-    nlinks = 0;
+    ResetNumLinks();
     LYFreeStringList(LYcommandList());
     HTInitProgramPaths(FALSE);
 #if EXTENDED_STARTFILE_RECALL

@@ -1,5 +1,5 @@
 /*
- * $LynxId: HTTP.h,v 1.13 2025/07/22 00:19:25 tom Exp $
+ * $LynxId: HTTP.h,v 1.14 2025/10/31 08:13:07 tom Exp $
  *
  * /Net/dxcern/userd/timbl/hypertext/WWW/Library/Implementation/HTTP.html
  *                                HYPERTEXT TRANSFER PROTOCOL
@@ -24,6 +24,11 @@ extern "C" {
 #define URL_GET_METHOD  1
 #define URL_POST_METHOD 2
 #define URL_MAIL_METHOD 3
+
+#define UrlMethod(n) \
+    ((n) == URL_GET_METHOD ? "GET" \
+     : (n) == URL_POST_METHOD ? "POST" \
+     : (n) == URL_MAIL_METHOD ? "MAIL" : "?")
 
     /*
      * Special value for 'reloading' used to tell HTLoadDocument() that the

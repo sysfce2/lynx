@@ -1,5 +1,5 @@
 /*
- * $LynxId: HTML.c,v 1.205 2025/08/07 23:57:38 tom Exp $
+ * $LynxId: HTML.c,v 1.207 2025/10/24 08:13:09 tom Exp $
  *
  *		Structured stream to Rich hypertext converter
  *		============================================
@@ -914,11 +914,51 @@ static void clear_objectdata(HTStructured * me)
     }
 }
 
+#define BaseAddress(me) \
+	((me->inBASE) \
+	 ? me->base_href \
+	 : me->node_anchor->address)
+
+#define BaseAddress2(me,cond) \
+	((me->inBASE && (cond)) \
+	 ? me->base_href \
+	 : me->node_anchor->address)
+
 #define HTParseALL(pp,pconst)  \
 	{ char* free_me = *pp; \
 	  *pp = HTParse(*pp, pconst, PARSE_ALL); \
 	  FREE(free_me);       \
 	}
+
+#define IsPresent(attr)     (present && present[attr])
+#define HaveAttrValue(attr) (IsPresent(attr) && non_empty(value[attr]))
+
+static char *ResolveActionLink(HTStructured * me, char *action)
+{
+    HTChildAnchor *source;
+    HTAnchor *link_dest;
+
+    CTRACE((tfp, "Entering ResolveActionLink %s\n", NonNull(action)));
+    source = HTAnchor_findChildAndLink(me->node_anchor,
+				       NULL,
+				       action,
+				       (HTLinkType *) 0);
+    if ((link_dest = HTAnchor_followLink(source)) != NULL) {
+	/*
+	 * Memory leak fixed.  05-28-94 Lynx 2-3-1 Garrett Arch Blythe
+	 */
+	char *cp_freeme = HTAnchor_address(link_dest);
+
+	if (cp_freeme != NULL) {
+	    StrAllocCopy(action, cp_freeme);
+	    FREE(cp_freeme);
+	} else {
+	    StrAllocCopy(action, "");
+	}
+    }
+    CTRACE((tfp, "Leaving ResolveActionLink %s\n", NonNull(action)));
+    return action;
+}
 
 /*	Start Element
  *	-------------
@@ -939,7 +979,6 @@ static int HTML_start_element(HTStructured * me, int element_number,
     char *I_value = NULL;
     char *I_name = NULL;
     char *temp = NULL;
-    const char *Base = NULL;
     int dest_char_set = -1;
     HTParentAnchor *dest = NULL;	/* An anchor's destination */
     BOOL dest_ismap = FALSE;	/* Is dest an image map script? */
@@ -1186,18 +1225,13 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	     * Prepare to do housekeeping on the reference.  - FM
 	     */
 	    if (isEmpty(value[HTML_LINK_HREF])) {
-		Base = (me->inBASE)
-		    ? me->base_href
-		    : me->node_anchor->address;
-		StrAllocCopy(href, Base);
+		StrAllocCopy(href, BaseAddress(me));
 	    } else {
 		StrAllocCopy(href, value[HTML_LINK_HREF]);
 		(void) LYLegitimizeHREF(me, &href, TRUE, TRUE);
 
-		Base = (me->inBASE && *href != '\0' && *href != '#')
-		    ? me->base_href
-		    : me->node_anchor->address;
-		HTParseALL(&href, Base);
+		HTParseALL(&href,
+			   BaseAddress2(me, (*href != '\0' && *href != '#')));
 	    }
 
 	    /*
@@ -1491,17 +1525,13 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		StrAllocCopy(href, value[HTML_ISINDEX_ACTION]);
 	    LYLegitimizeHREF(me, &href, TRUE, TRUE);
 
-	    Base = (me->inBASE && *href != '\0' && *href != '#')
-		? me->base_href
-		: me->node_anchor->address;
-	    HTParseALL(&href, Base);
+	    HTParseALL(&href,
+		       BaseAddress2(me, (*href != '\0' && *href != '#')));
 	    HTAnchor_setIndex(me->node_anchor, href);
 	    FREE(href);
 
 	} else {
-	    Base = (me->inBASE) ?
-		me->base_href : me->node_anchor->address;
-	    HTAnchor_setIndex(me->node_anchor, Base);
+	    HTAnchor_setIndex(me->node_anchor, BaseAddress(me));
 	}
 	/*
 	 * Support HTML 3.0 PROMPT attribute.  - FM
@@ -2991,11 +3021,9 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	     * set, we'll use the current document's URL for resolving.
 	     * Otherwise use the BASE.  - kw
 	     */
-	    Base = ((me->inBASE &&
-		     !(*map_href == '#' && LYSeekFragMAPinCur == TRUE))
-		    ? me->base_href
-		    : me->node_anchor->address);
-	    HTParseALL(&map_href, Base);
+	    HTParseALL(&map_href,
+		       BaseAddress2(me, !(*map_href == '#' &&
+					  LYSeekFragMAPinCur == TRUE)));
 
 	    /*
 	     * Prepend our client-side MAP access field.  - FM
@@ -3465,11 +3493,10 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	     * itself, unless the HREF is a lone fragment and
 	     * LYSeekFragAREAinCur is set.  - FM
 	     */
-	    Base = (((me->inBASE && *href != '\0') &&
-		     !(*href == '#' && LYSeekFragAREAinCur == TRUE))
-		    ? me->base_href
-		    : me->node_anchor->address);
-	    HTParseALL(&href, Base);
+	    HTParseALL(&href,
+		       BaseAddress2(me, ((*href != '\0') &&
+					 !(*href == '#' &&
+					   LYSeekFragAREAinCur == TRUE))));
 
 	    /*
 	     * Check for an ALT.  - FM
@@ -3823,9 +3850,6 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    non_empty(value[HTML_APPLET_CODE])) {
 	    char *base = NULL;
 
-	    Base = (me->inBASE)
-		? me->base_href
-		: me->node_anchor->address;
 	    /*
 	     * Check for a CODEBASE attribute.  - FM
 	     */
@@ -3842,12 +3866,12 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		LYAddHtmlSep(&base);
 		LYLegitimizeHREF(me, &base, TRUE, FALSE);
 
-		HTParseALL(&base, Base);
+		HTParseALL(&base, BaseAddress(me));
 	    }
 
 	    StrAllocCopy(href, value[HTML_APPLET_CODE]);
 	    LYLegitimizeHREF(me, &href, TRUE, FALSE);
-	    HTParseALL(&href, (base ? base : Base));
+	    HTParseALL(&href, (base ? base : BaseAddress(me)));
 	    FREE(base);
 
 	    if (*href) {
@@ -4101,9 +4125,6 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    char *enctype = NULL;
 	    const char *accept_cs = NULL;
 
-	    HTChildAnchor *source;
-	    HTAnchor *link_dest;
-
 	    /*
 	     * FORM may have been declared SGML_EMPTY in HTMLDTD.c, and
 	     * SGML_character() in SGML.c may check for a FORM end tag to call
@@ -4123,58 +4144,32 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    me->inFORM = TRUE;
 	    EMIT_IFDEF_USE_JUSTIFY_ELTS(form_in_htext = TRUE);
 
-	    if (present && present[HTML_FORM_ACCEPT_CHARSET]) {
+	    if (IsPresent(HTML_FORM_ACCEPT_CHARSET)) {
 		accept_cs = (value[HTML_FORM_ACCEPT_CHARSET]
 			     ? value[HTML_FORM_ACCEPT_CHARSET]
 			     : "UNKNOWN");
 	    }
 
-	    Base = (me->inBASE)
-		? me->base_href
-		: me->node_anchor->address;
-
-	    if (present && present[HTML_FORM_ACTION] &&
-		value[HTML_FORM_ACTION]) {
-
+	    /*
+	     * Check whether a base tag is in effect.  Note that actions
+	     * always are resolved w.r.t.  to the base, even if the action
+	     * is empty.  - FM
+	     */
+	    if (HaveAttrValue(HTML_FORM_ACTION)) {
 		StrAllocCopy(action, value[HTML_FORM_ACTION]);
 		LYLegitimizeHREF(me, &action, TRUE, TRUE);
-
-		/*
-		 * Check whether a base tag is in effect.  Note that actions
-		 * always are resolved w.r.t.  to the base, even if the action
-		 * is empty.  - FM
-		 */
-		HTParseALL(&action, Base);
-
+		HTParseALL(&action, BaseAddress(me));
 	    } else {
-		StrAllocCopy(action, Base);
+		StrAllocCopy(action, BaseAddress(me));
 	    }
+	    action = ResolveActionLink(me, action);
 
-	    source = HTAnchor_findChildAndLink(me->node_anchor,
-					       NULL,
-					       action,
-					       (HTLinkType *) 0);
-	    if ((link_dest = HTAnchor_followLink(source)) != NULL) {
-		/*
-		 * Memory leak fixed.  05-28-94 Lynx 2-3-1 Garrett Arch Blythe
-		 */
-		char *cp_freeme = HTAnchor_address(link_dest);
-
-		if (cp_freeme != NULL) {
-		    StrAllocCopy(action, cp_freeme);
-		    FREE(cp_freeme);
-		} else {
-		    StrAllocCopy(action, "");
-		}
-	    }
-
-	    if (present && present[HTML_FORM_METHOD])
+	    if (IsPresent(HTML_FORM_METHOD))
 		StrAllocCopy(method, (value[HTML_FORM_METHOD]
 				      ? value[HTML_FORM_METHOD]
 				      : "GET"));
 
-	    if (present && present[HTML_FORM_ENCTYPE] &&
-		non_empty(value[HTML_FORM_ENCTYPE])) {
+	    if (HaveAttrValue(HTML_FORM_ENCTYPE)) {
 		StrAllocCopy(enctype, value[HTML_FORM_ENCTYPE]);
 		LYLowerCase(enctype);
 	    }
@@ -4184,11 +4179,9 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		 * Check for a TITLE attribute, and if none is present, check
 		 * for a SUBJECT attribute as a synonym.  - FM
 		 */
-		if (present[HTML_FORM_TITLE] &&
-		    non_empty(value[HTML_FORM_TITLE])) {
+		if (HaveAttrValue(HTML_FORM_TITLE)) {
 		    StrAllocCopy(title, value[HTML_FORM_TITLE]);
-		} else if (present[HTML_FORM_SUBJECT] &&
-			   non_empty(value[HTML_FORM_SUBJECT])) {
+		} else if (HaveAttrValue(HTML_FORM_SUBJECT)) {
 		    StrAllocCopy(title, value[HTML_FORM_SUBJECT]);
 		}
 		if (non_empty(title)) {
@@ -4436,19 +4429,16 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    /*
 	     * Get the TYPE and make sure we can handle it.  - FM
 	     */
-	    if (present && present[HTML_INPUT_TYPE] &&
-		non_empty(value[HTML_INPUT_TYPE])) {
+	    if (HaveAttrValue(HTML_INPUT_TYPE)) {
 		const char *not_impl = NULL;
 		char *usingval = NULL;
 
 		I.type = value[HTML_INPUT_TYPE];
 
 		if (!strcasecomp(I.type, "range")) {
-		    if (present[HTML_INPUT_MIN] &&
-			non_empty(value[HTML_INPUT_MIN]))
+		    if (HaveAttrValue(HTML_INPUT_MIN))
 			I.min = value[HTML_INPUT_MIN];
-		    if (present[HTML_INPUT_MAX] &&
-			non_empty(value[HTML_INPUT_MAX]))
+		    if (HaveAttrValue(HTML_INPUT_MAX))
 			I.max = value[HTML_INPUT_MAX];
 		    /*
 		     * Not yet implemented.
@@ -4462,8 +4452,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		    break;
 
 		} else if (!strcasecomp(I.type, "file")) {
-		    if (present[HTML_INPUT_ACCEPT] &&
-			non_empty(value[HTML_INPUT_ACCEPT]))
+		    if (HaveAttrValue(HTML_INPUT_ACCEPT))
 			I.accept = value[HTML_INPUT_ACCEPT];
 #ifndef USE_FILE_UPLOAD
 		    not_impl = "[FILE Input]";
@@ -4525,8 +4514,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    /*
 	     * Handle the INPUT as for a FORM.  - FM
 	     */
-	    if (!(present && present[HTML_INPUT_NAME] &&
-		  non_empty(value[HTML_INPUT_NAME]))) {
+	    if (!(HaveAttrValue(HTML_INPUT_NAME))) {
 		I.name = "";
 	    } else if (StrChr(value[HTML_INPUT_NAME], '&') == NULL) {
 		I.name = value[HTML_INPUT_NAME];
@@ -4536,11 +4524,9 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		I.name = I_name;
 	    }
 
-	    if ((present && present[HTML_INPUT_ALT] &&
-		 non_empty(value[HTML_INPUT_ALT]) &&
+	    if ((HaveAttrValue(HTML_INPUT_ALT) &&
 		 I.type && !strcasecomp(I.type, "image")) &&
-		!(present && present[HTML_INPUT_VALUE] &&
-		  non_empty(value[HTML_INPUT_VALUE]))) {
+		!(HaveAttrValue(HTML_INPUT_VALUE))) {
 		/*
 		 * This is a TYPE="image" using an ALT rather than VALUE
 		 * attribute to indicate the link string for text clients or
@@ -4550,13 +4536,11 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		UseALTasVALUE = TRUE;
 	    }
 	    if (verbose_img && !clickable_images &&
-		present && present[HTML_INPUT_SRC] &&
-		non_empty(value[HTML_INPUT_SRC]) &&
+		HaveAttrValue(HTML_INPUT_SRC) &&
 		I.type && !strcasecomp(I.type, "image")) {
 		ImageSrc = MakeNewImageValue(value);
 	    } else if (clickable_images == TRUE &&
-		       present && present[HTML_INPUT_SRC] &&
-		       non_empty(value[HTML_INPUT_SRC]) &&
+		       HaveAttrValue(HTML_INPUT_SRC) &&
 		       I.type && !strcasecomp(I.type, "image")) {
 		StrAllocCopy(href, value[HTML_INPUT_SRC]);
 		/*
@@ -4595,8 +4579,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		    (const void *) present));
 	    /* text+file don't go in here */
 	    if ((UseALTasVALUE == TRUE) ||
-		(present && present[HTML_INPUT_VALUE] &&
-		 value[HTML_INPUT_VALUE] &&
+		(HaveAttrValue(HTML_INPUT_VALUE) &&
 		 (*value[HTML_INPUT_VALUE] ||
 		  (I.type && (!strcasecomp(I.type, "checkbox") ||
 			      !strcasecomp(I.type, "radio")))))) {
@@ -4678,50 +4661,46 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		 */
 		I.value = ImageSrc;
 	    }
-	    if (present && present[HTML_INPUT_READONLY])
+	    if (IsPresent(HTML_INPUT_READONLY))
 		I.readonly = YES;
-	    if (present && present[HTML_INPUT_CHECKED])
+	    if (IsPresent(HTML_INPUT_CHECKED))
 		I.checked = YES;
-	    if (present && present[HTML_INPUT_SIZE] &&
-		non_empty(value[HTML_INPUT_SIZE]))
+	    if (HaveAttrValue(HTML_INPUT_SIZE))
 		I.size = atoi(value[HTML_INPUT_SIZE]);
 	    LimitValue(I.size, MAX_LINE);
-	    if (present && present[HTML_INPUT_MAXLENGTH] &&
-		non_empty(value[HTML_INPUT_MAXLENGTH]))
+	    if (HaveAttrValue(HTML_INPUT_MAXLENGTH))
 		I.maxlength = value[HTML_INPUT_MAXLENGTH];
-	    if (present && present[HTML_INPUT_DISABLED])
+	    if (HaveAttrValue(HTML_INPUT_DISABLED))
 		I.disabled = YES;
 
-	    if (present && present[HTML_INPUT_ACCEPT_CHARSET]) {	/* Not yet used. */
+	    if (IsPresent(HTML_INPUT_ACCEPT_CHARSET)) {		/* Not yet used. */
 		I.accept_cs = (value[HTML_INPUT_ACCEPT_CHARSET]
 			       ? value[HTML_INPUT_ACCEPT_CHARSET]
 			       : "UNKNOWN");
 	    }
-	    if (present && present[HTML_INPUT_ALIGN] &&		/* Not yet used. */
-		non_empty(value[HTML_INPUT_ALIGN]))
+	    if (HaveAttrValue(HTML_INPUT_FORMACTION)) {		/* Not yet used. */
+		StrAllocCopy(I.submit_action, value[HTML_INPUT_FORMACTION]);
+		LYLegitimizeHREF(me, &I.submit_action, TRUE, TRUE);
+		HTParseALL(&I.submit_action, BaseAddress(me));
+		I.submit_action = ResolveActionLink(me, I.submit_action);
+	    }
+	    if (HaveAttrValue(HTML_INPUT_ALIGN))	/* Not yet used. */
 		I.align = value[HTML_INPUT_ALIGN];
-	    if (present && present[HTML_INPUT_CLASS] &&		/* Not yet used. */
-		non_empty(value[HTML_INPUT_CLASS]))
+	    if (HaveAttrValue(HTML_INPUT_CLASS))	/* Not yet used. */
 		I.iclass = value[HTML_INPUT_CLASS];
-	    if (present && present[HTML_INPUT_ERROR] &&		/* Not yet used. */
-		non_empty(value[HTML_INPUT_ERROR]))
+	    if (HaveAttrValue(HTML_INPUT_ERROR))	/* Not yet used. */
 		I.error = value[HTML_INPUT_ERROR];
-	    if (present && present[HTML_INPUT_HEIGHT] &&	/* Not yet used. */
-		non_empty(value[HTML_INPUT_HEIGHT]))
+	    if (HaveAttrValue(HTML_INPUT_HEIGHT))	/* Not yet used. */
 		I.height = value[HTML_INPUT_HEIGHT];
-	    if (present && present[HTML_INPUT_WIDTH] &&		/* Not yet used. */
-		non_empty(value[HTML_INPUT_WIDTH]))
+	    if (HaveAttrValue(HTML_INPUT_WIDTH))	/* Not yet used. */
 		I.width = value[HTML_INPUT_WIDTH];
-	    if (present && present[HTML_INPUT_ID] &&
-		non_empty(value[HTML_INPUT_ID])) {
+	    if (HaveAttrValue(HTML_INPUT_ID)) {
 		I.id = value[HTML_INPUT_ID];
 		CHECK_ID(HTML_INPUT_ID);
 	    }
-	    if (present && present[HTML_INPUT_LANG] &&	/* Not yet used. */
-		non_empty(value[HTML_INPUT_LANG]))
+	    if (HaveAttrValue(HTML_INPUT_LANG))		/* Not yet used. */
 		I.lang = value[HTML_INPUT_LANG];
-	    if (present && present[HTML_INPUT_MD] &&	/* Not yet used. */
-		non_empty(value[HTML_INPUT_MD]))
+	    if (HaveAttrValue(HTML_INPUT_MD))	/* Not yet used. */
 		I.md = value[HTML_INPUT_MD];
 
 	    chars = HText_beginInput(me->text, me->inUnderline, &I);
@@ -6874,15 +6853,10 @@ static int HTML_end_element(HTStructured * me, int element_number,
 	    me->select_disabled = FALSE;
 
 	    /*
-	     * Make sure we're in a form.
+	     * Check if we're in a form.
 	     */
 	    if (!me->inFORM) {
-		if (LYBadHTML(me)) {
-		    LYShowBadHTML("Bad HTML: SELECT end tag not within FORM element *****\n");
-		}
-		/*
-		 * Hopefully won't crash, so we'll ignore it.  - kw
-		 */
+		CTRACE((tfp, "HTML: SELECT end tag not within FORM element\n"));
 	    }
 
 	    /*

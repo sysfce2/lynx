@@ -1,164 +1,207 @@
 /*
- *
+ * $LynxId: structdump.h,v 1.15 2025/11/05 01:37:38 tom Exp $
  * Some macros to dump out formatted struct's via the trace file.  -KED
  *
  */
 #ifndef STRUCTDUMP_H
 #define STRUCTDUMP_H
 
+#include <HTForms.h>
+
+#if defined(USE_COLOR_STYLE)
+#define if_USE_COLOR_STYLE(stmt) stmt
+#else
+#define if_USE_COLOR_STYLE(stmt)	/* nothing */
+#endif
+
+#define ConCat(a,b) a b
+#define FieldFormat(fmt) ConCat(ConCat("%20s:", fmt), "\n")
+
+#define DumpAddress(base, field) \
+	    CTRACE((tfp, FieldFormat("%p"), #field, (base)->field))
+
+#define DumpBoolean(base, field) \
+	    CTRACE((tfp, FieldFormat("%s"), #field, (base)->field ? "true" : "false"))
+
+#define DumpNumber(base, field) \
+	    CTRACE((tfp, FieldFormat("%d"), #field, (base)->field)) \
+
+#define DumpString(base, field) \
+	    if ((base)->field != NULL) { \
+		CTRACE((tfp, FieldFormat("|%s|"), #field, (base)->field)); \
+	    } else { \
+		CTRACE((tfp, FieldFormat("<NULL>"), #field)); \
+	    }
+
+#define ShowLinkType(type) \
+	    ((type) == INPUT_ANCHOR \
+	    ? "INPUT_ANCHOR" \
+	    : ((type) == HYPERTEXT_ANCHOR \
+	       ? "HYPERTEXT_ANCHOR" \
+	       : ((type) == INTERNAL_LINK_ANCHOR \
+		   ? "INTERNAL_ANCHOR" \
+		   : ((type) & HYPERTEXT_ANCHOR \
+		      ? "EXTERNAL?" \
+		      : ((type) & INTERNAL_LINK_ANCHOR \
+		         ? "INTERNAL?" \
+		         : "?")))))
+
+#define DumpLinkType(base, field) \
+	CTRACE((tfp, FieldFormat("%s"), #field, ShowLinkType((base)->field)))
+
 /* usage: DUMPSTRUCT_LINK(link_ptr, "message"); */
 #define   DUMPSTRUCT_LINK(L,X) \
-if ((L)) { \
-CTRACE((tfp, "\n" \
-            "KED:     link_ptr=%p  sizeof=%d  ["X"]\n" \
-            "link       struct {\n"      \
-            "           *lname=%p\n"     \
-            "            lname=|%s|\n"   \
-            "          *target=%p\n"     \
-            "           target=|%s|\n"   \
-            "        *hightext=%p\n"     \
-            "         hightext=|%s|\n"   \
-            "       *hightext2=%p\n"     \
-            "        hightext2=|%s|\n"   \
-            " hightext2_offset=%d\n"     \
-            "      inUnderline=%1x\n"    \
-            "               lx=%d\n"     \
-            "               ly=%d\n"     \
-            "             type=%d\n"     \
-            "    anchor_number=%d\n"     \
-            "  anchor_line_num=%d\n"     \
-            "            *form=%p\n"     \
-            "}\n", \
-            (L), sizeof(*((L))), \
-            (L)->lname, (L)->lname, (L)->target, (L)->target, \
-            (L)->l_hightext, (L)->l_hightext, \
-            (L)->l_hightext2, (L)->l_hightext2, \
-            (L)->l_hightext2_offset, \
-            (L)->inUnderline, (L)->lx, (L)->ly, \
-            (L)->type, (L)->anchor_number, (L)->anchor_line_num, (L)->form)); \
-}else{ \
-CTRACE((tfp, "\n" \
-            "KED:     link_ptr=0x00000000  (NULL)     ["X"]\n")); \
-} \
-CTRACE_FLUSH(tfp);
+	do { \
+	    CTRACE((tfp, "DUMP: link_ptr=%p  sizeof=%lu  ["X"]\n", \
+		   (L), sizeof(*(L)))); \
+	    if ((L)) { \
+		CTRACE((tfp, "LinkInfo struct {\n")); \
+		DumpAddress(L, lname); \
+		DumpString(L, lname); \
+		DumpString(L, l_hightext); \
+		DumpBoolean(L, inUnderline); \
+		DumpNumber(L, lx); \
+		DumpNumber(L, ly); \
+		DumpNumber(L, type); \
+		DumpNumber(L, anchor_number); \
+		DumpNumber(L, anchor_line_num); \
+		/* HiliteList list */ \
+		DumpAddress(L, l_form); \
+		DumpString(L, submit_action); \
+		CTRACE((tfp, "}\n")); \
+	    } \
+	    CTRACE_FLUSH(tfp); \
+	} while (0)
 
 /* usage: DUMPSTRUCT_ANCHOR(anchor_ptr, "message"); */
 #define   DUMPSTRUCT_ANCHOR(A,X) \
-if ((A)) { \
-CTRACE((tfp, "\n" \
-            "KED:   anchor_ptr=%p  sizeof=%lu  ["X"]\n" \
-            "TextAnchor struct {\n"      \
-            "            *next=%p\n"     \
-            "            *prev=%p\n"     \
-            "           number=%d\n"     \
-            "         line_pos=%d\n"     \
-            "           extent=%d\n"     \
-            "         line_num=%d\n"     \
-            "        link_type=%d\n"     \
-            "     *input_field=%p\n"     \
-            "      input_field=|%s|\n"   \
-            "      show_anchor=%1x\n"    \
-            "      inUnderline=%1x\n"    \
-            "   expansion_anch=%1x\n"    \
-            "          *anchor=%p\n"     \
-            "}\n", \
-            (A), (unsigned long) sizeof(*((A))), \
-            (A)->next, (A)->prev, \
-            (A)->number, (A)->line_pos, \
-            (A)->extent, (A)->line_num, \
-            (A)->link_type, \
-            (A)->input_field, \
-            (A)->input_field ? NonNull((A)->input_field->name) : "", \
-            (A)->show_anchor, \
-            (A)->inUnderline, (A)->expansion_anch, (A)->anchor)); \
-}else{ \
-CTRACE((tfp, "\n" \
-            "KED:   anchor_ptr=0x00000000  (NULL)     ["X"]\n")); \
-} \
-CTRACE_FLUSH(tfp);
+	do { \
+	    CTRACE((tfp, "DUMP: anchor_ptr=%p  sizeof=%lu  ["X"]\n", \
+		   (A), sizeof(*(A)))); \
+	    if ((A)) { \
+		CTRACE((tfp, "TextAnchor struct {\n" )); \
+		DumpAddress(A, next); \
+		DumpAddress(A, prev); \
+		DumpNumber(A, sgml_offset); \
+		DumpNumber(A, number); \
+		DumpNumber(A, show_number); \
+		DumpNumber(A, line_num); \
+		DumpNumber(A, line_pos); \
+		DumpNumber(A, extent); \
+		DumpBoolean(A, show_anchor); \
+		DumpBoolean(A, inUnderline); \
+		DumpBoolean(A, expansion_anch); \
+		DumpLinkType(A, link_type); \
+		DumpAddress(A, input_field); \
+		if (A->input_field != NULL) { \
+		    DumpString(A, input_field->name); \
+		} \
+		/* HiliteList lites */ \
+		DumpAddress(A, anchor); \
+		CTRACE((tfp, "}\n")); \
+	    } \
+	    CTRACE_FLUSH(tfp); \
+	} while (0)
 
-/* usage: DUMPSTRUCT_FORM(forminfo_ptr, "message"); */
-#define   DUMPSTRUCT_FORMINFO(F,X) \
-if ((F)) { \
-CTRACE((tfp, "\n" \
-            "KED: forminfo_ptr=%p  sizeof=%lu  ["X"]\n" \
-            "FormInfo   struct {\n"      \
-            "            *name=%p\n"     \
-            "             name=|%s|\n"   \
-            "           number=%d\n"     \
-            "             type=%d\n"     \
-            "           *value=%p\n"     \
-            "            value=|%s|\n"   \
-            "      *orig_value=%p\n"     \
-            "       orig_value=|%s|\n"   \
-            "             size=%d\n"     \
-            "        maxlength=%lu\n"    \
-            "            group=%d\n"     \
-            "        num_value=%d\n"     \
-            "           hrange=%d\n"     \
-            "           lrange=%d\n"     \
-            "     *select_list=%p\n"     \
-            "    submit_action=|%s|\n"   \
-            "    submit_method=%d\n"     \
-            "   submit_enctype=|%s|\n"   \
-            "     submit_title=|%s|\n"   \
-            "         no_cache=%1x\n"    \
-            "  cp_submit_value=|%s|\n"   \
-            "orig_submit_value=|%s|\n"   \
-            "           size_l=%d\n"     \
-            "         disabled=%d\n"     \
-            "         readonly=%d\n"     \
-            "          name_cs=%d\n"     \
-            "         value_cs=%d\n"     \
-            "        accept_cs=|%s|\n"   \
-            "}\n", \
-            (F), (unsigned long) sizeof(*((F))), \
-            (F)->name, NonNull((F)->name), \
-            (F)->number, (F)->type, \
-            (F)->value, NonNull((F)->value), \
-            (F)->orig_value, NonNull((F)->orig_value), \
-            (F)->size, (unsigned long) (F)->maxlength, \
-            (F)->group, (F)->num_value, \
-            (F)->hrange, (F)->lrange, (F)->select_list, \
-            NonNull((F)->submit_action), \
-            (F)->submit_method, \
-            NonNull((F)->submit_enctype), \
-            NonNull((F)->submit_title), \
-            (F)->no_cache, \
-            NonNull((F)->cp_submit_value), \
-            NonNull((F)->orig_submit_value), \
-            (F)->size_l, (F)->disabled, (F)->readonly, (F)->name_cs, (F)->value_cs, \
-            NonNull((F)->accept_cs))); \
-} else { \
-CTRACE((tfp, "\n" \
-            "KED: forminfo_ptr=0x00000000  (NULL)     ["X"]\n")); \
-} \
-CTRACE_FLUSH(tfp);
+/* usage: DUMPSTRUCT_FormInfo(forminfo_ptr, "message"); */
+#define   DUMPSTRUCT_FormInfo(F,X) \
+	do { \
+	    CTRACE((tfp, "DUMP: forminfo_ptr=%p  sizeof=%lu  ["X"]\n", \
+		   (F), sizeof(*(F)))); \
+	    if ((F)) { \
+		CTRACE((tfp, "FormInfo struct {\n")); \
+		DumpAddress(F, name); \
+		DumpString(F, name); \
+		DumpNumber(F, number); \
+		DumpNumber(F, type); \
+		DumpAddress(F, value); \
+		DumpString(F, value); \
+		DumpAddress(F, orig_value); \
+		DumpString(F, orig_value); \
+		DumpNumber(F, size); \
+		DumpNumber(F, maxlength); \
+		DumpNumber(F, group); \
+		DumpNumber(F, num_value); \
+		DumpNumber(F, hrange); \
+		DumpNumber(F, lrange); \
+		DumpAddress(F, select_list); \
+		DumpAddress(F, submit_action); \
+		DumpNumber(F, submit_method); \
+		DumpString(F, submit_enctype); \
+		DumpString(F, submit_title); \
+		DumpNumber(F, no_cache); \
+		DumpString(F, cp_submit_value); \
+		DumpString(F, orig_submit_value); \
+		DumpNumber(F, size_l); \
+		DumpNumber(F, disabled); \
+		DumpNumber(F, readonly); \
+		DumpNumber(F, name_cs); \
+		DumpNumber(F, disabled); \
+		DumpNumber(F, readonly); \
+		DumpNumber(F, name_cs); \
+		DumpNumber(F, name_cs); \
+		DumpNumber(F, value_cs); \
+		DumpString(F, accept_cs); \
+		CTRACE((tfp, "}\n")); \
+	    } \
+	    CTRACE_FLUSH(tfp); \
+	} while (0)
+
+/* usage: DUMPSTRUCT_InputFieldData(inputfield_ptr, "message"); */
+#define   DUMPSTRUCT_InputFieldData(I,X) \
+	do { \
+	    CTRACE((tfp, "DUMP: inputdata_ptr=%p  sizeof=%lu  ["X"]\n", \
+		   (I), sizeof(*(I)))); \
+	    if ((I)) { \
+		CTRACE((tfp, "InputFieldData struct {")); \
+		DumpString(I, accept); \
+		DumpString(I, align); \
+		DumpBoolean(I, checked); \
+		DumpString(I, iclass); \
+		DumpBoolean(I, disabled); \
+		DumpBoolean(I, readonly); \
+		DumpString(I, error); \
+		DumpString(I, height); \
+		DumpString(I, id); \
+		DumpString(I, lang); \
+		DumpString(I, max); \
+		DumpString(I, maxlength); \
+		DumpString(I, md); \
+		DumpString(I, min); \
+		DumpString(I, name); \
+		DumpNumber(I, size); \
+		DumpString(I, src); \
+		DumpString(I, type); \
+		DumpString(I, value); \
+		DumpString(I, width); \
+		DumpNumber(I, name_cs); \
+		DumpString(I, value); \
+		DumpString(I, accept_cs); \
+		DumpString(I, accept_cs); \
+		DumpString(I, submit_action); \
+		CTRACE((tfp, "}\n")); \
+	    } \
+	    CTRACE_FLUSH(tfp); \
+	} while (0)
 
 /* usage: DUMPSTRUCT_LINE(htline_ptr, "message"); */
 #define   DUMPSTRUCT_LINE(L,X) \
-if ((L)) { \
-CTRACE((tfp, "\n" \
-            "KED: htline_ptr=%p  sizeof=%d  ["X"]\n" \
-            "HTLine  struct {\n"      \
-            "         *next=%p\n"     \
-            "         *prev=%p\n"     \
-            "        offset=%d\n"     \
-            "          size=%d\n"     \
-            "   split_after=%1x\n"    \
-            "        bullet=%1x\n"    \
-            "expansion_line=%1x\n"    \
-            "w/o U_C_S def\n"         \
-            "        data[]=%p\n"     \
-            "          data=|%s|\n"   \
-            "}\n", \
-            (L), sizeof(*((L))), \
-            (L)->next, (L)->prev, (L)->offset, (L)->size, (L)->split_after, \
-            (L)->bullet, (L)->expansion_line, (L)->data, (L)->data)); \
-}else{ \
-CTRACE((tfp, "\n" \
-            "KED: htline_ptr=0x00000000  (NULL)     ["X"]\n")); \
-} \
-CTRACE_FLUSH(tfp);
+	do { \
+	    CTRACE((tfp, "DUMP: htline_ptr=%p  sizeof=%lu  ["X"]\n", \
+		   (L), sizeof(*(L)))); \
+	    if ((L)) { \
+		CTRACE((tfp, "HTLine struct {")); \
+		DumpAddress(L, next); \
+		DumpAddress(L, prev); \
+		DumpNumber(L, offset); \
+		DumpNumber(L, size); \
+		DumpAddress(L, data); \
+		DumpString(L, data); \
+		if_USE_COLOR_STYLE(DumpAddress(L, styles)); \
+		if_USE_COLOR_STYLE(DumpNumber(L, numstyles)); \
+		CTRACE((tfp, "}\n")); \
+	    } \
+	    CTRACE_FLUSH(tfp); \
+	} while (0)
 
 #endif /* STRUCTDUMP_H */
