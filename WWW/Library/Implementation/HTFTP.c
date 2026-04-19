@@ -1,5 +1,5 @@
 /*
- * $LynxId: HTFTP.c,v 1.153 2025/01/07 22:55:07 tom Exp $
+ * $LynxId: HTFTP.c,v 1.154 2026/04/19 22:44:53 tom Exp $
  *
  *			File Transfer Protocol (FTP) Client
  *			for a WorldWideWeb browser
@@ -1028,7 +1028,7 @@ static int get_connection(const char *arg,
 	    CTRACE((tfp, "HTFTP: Treating as MSDOS (Unix emulation) server.\n"));
 
 	} else if (StrNCmp(response_text + 4, "VMS", 3) == 0) {
-	    char *tilde = strstr(arg, "/~");
+	    const char *tilde = strstr(arg, "/~");
 
 	    use_list = TRUE;
 	    if (tilde != NULL

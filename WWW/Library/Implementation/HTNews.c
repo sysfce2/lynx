@@ -1,5 +1,5 @@
 /*
- * $LynxId: HTNews.c,v 1.85 2025/07/22 00:34:58 tom Exp $
+ * $LynxId: HTNews.c,v 1.86 2026/04/19 22:47:35 tom Exp $
  *
  *			NEWS ACCESS				HTNews.c
  *			===========
@@ -2431,7 +2431,7 @@ static int HTLoadNews(const char *arg,
 		    p1 = (strrchr(arg, ':') + 1);
 		}
 	    } else {
-		char *cp2;
+		const char *cp2;
 
 		/*
 		 * Reset p1 so that it points to the newsgroup (or a wildcard),

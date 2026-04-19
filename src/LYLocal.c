@@ -1,5 +1,5 @@
 /*
- * $LynxId: LYLocal.c,v 1.138 2025/01/08 00:37:39 tom Exp $
+ * $LynxId: LYLocal.c,v 1.139 2026/04/19 22:58:14 tom Exp $
  *
  *  Routines to manipulate the local filesystem.
  *  Written by: Rick Mallett, Carleton University
@@ -947,7 +947,7 @@ static int modify_name(char *testpath)
 static int modify_location(char *testpath)
 {
     const char *cp;
-    char *sp;
+    const char *sp;
     bstring *tmpbuf = NULL;
     char *newpath = NULL;
     char *savepath = NULL;
@@ -993,7 +993,7 @@ static int modify_location(char *testpath)
 	    if (LYisAbsPath(tmpbuf->str)) {
 		StrAllocCopy(newpath, tmpbuf->str);
 	    } else if ((sp = LYLastPathSep(newpath)) != NULL) {
-		*++sp = '\0';
+		newpath[++sp - newpath] = '\0';
 		StrAllocCat(newpath, tmpbuf->str);
 	    } else {
 		HTAlert(gettext("Unexpected failure - unable to find trailing path separator"));
@@ -1206,7 +1206,7 @@ int local_create(DocInfo *doc)
 static int remove_single(char *testpath)
 {
     int code = 0;
-    char *cp;
+    const char *cp;
     char *tmpbuf = NULL;
     struct stat dir_info;
     BOOL is_directory = FALSE;
@@ -2207,7 +2207,7 @@ int dired_options(DocInfo *doc, char **newfile)
 static int get_filename(const char *prompt,
 			bstring **bufp)
 {
-    char *cp;
+    const char *cp;
 
     _statusline(prompt);
 

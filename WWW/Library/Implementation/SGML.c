@@ -1,5 +1,5 @@
 /*
- * $LynxId: SGML.c,v 1.193 2025/09/17 22:33:34 tom Exp $
+ * $LynxId: SGML.c,v 1.194 2026/04/19 22:48:57 tom Exp $
  *
  *			General SGML Parser code		SGML.c
  *			========================
@@ -901,7 +901,7 @@ static void handle_processing_instruction(HTStream *me)
 	 * Switch to UTF-8 if the encoding is explicitly "utf-8".
 	 */
 	if (!flag) {
-	    char *t = strstr(s, "encoding=");
+	    const char *t = strstr(s, "encoding=");
 
 	    if (t != NULL) {
 		char delim = 0;

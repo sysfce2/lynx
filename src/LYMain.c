@@ -1,5 +1,5 @@
 /*
- * $LynxId: LYMain.c,v 1.308 2025/10/29 00:15:39 tom Exp $
+ * $LynxId: LYMain.c,v 1.309 2026/04/19 23:02:20 tom Exp $
  */
 #include <HTUtils.h>
 #include <HTTP.h>
@@ -1161,18 +1161,17 @@ int main(int argc,
      * Set up the argument list.
      */
     pgm = argv[0];
-    cp = NULL;
 #ifdef USE_PROGRAM_DIR
     StrAllocCopy(program_dir, pgm);
-    if ((cp = strrchr(program_dir, '\\')) != NULL) {
+    if ((cp = (char *) strrchr(program_dir, '\\')) != NULL) {
 	*cp = '\0';
     } else {
 	FREE(program_dir);
 	StrAllocCopy(program_dir, ".");
     }
 #endif
-    if ((cp = LYLastPathSep(pgm)) != NULL) {
-	pgm = cp + 1;
+    if ((ccp = LYLastPathSep(pgm)) != NULL) {
+	pgm = ccp + 1;
     }
 
     /*

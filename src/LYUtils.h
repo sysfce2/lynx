@@ -1,4 +1,4 @@
-/* $LynxId: LYUtils.h,v 1.102 2023/10/23 08:04:01 tom Exp $ */
+/* $LynxId: LYUtils.h,v 1.103 2026/04/19 22:59:30 tom Exp $ */
 #ifndef LYUTILS_H
 #define LYUTILS_H
 
@@ -150,7 +150,6 @@ extern "C" {
     extern char *LYAddPathToSave(char *fname);
     extern char *LYFindConfigFile(const char *nominal, const char *dftfile);
     extern char *LYGetEnv(const char *name);
-    extern char *LYLastPathSep(const char *path);
     extern char *LYPathLeaf(char *pathname);
     extern char *LYTildeExpand(char **pathname, int embedded);
     extern char *LYgetXDisplay(void);
@@ -158,6 +157,7 @@ extern "C" {
     extern char *trimPoundSelector(char *address);
     extern const char *Home_Dir(void);
     extern const char *LYGetHiliteStr(int cur, int count);
+    extern const char *LYLastPathSep(const char *path);
     extern const char *LYSysShell(void);
     extern const char *index_to_restriction(unsigned inx);
     extern const char *wwwName(const char *pathname);

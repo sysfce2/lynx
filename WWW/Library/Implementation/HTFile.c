@@ -1,5 +1,5 @@
 /*
- * $LynxId: HTFile.c,v 1.169 2025/01/07 15:18:17 tom Exp $
+ * $LynxId: HTFile.c,v 1.170 2026/04/19 22:46:40 tom Exp $
  *
  *			File Access				HTFile.c
  *			===========
@@ -887,7 +887,7 @@ HTFormat HTFileFormat(const char *filename,
     int n;
     int i;
     int lf;
-    char *search;
+    const char *search;
 
     VMS_DEL_VERSION(filename);
 
@@ -1256,7 +1256,7 @@ CompressFileType HTCompressFileType(const char *filename,
 				    int *rootlen)
 {
     CompressFileType result = cftNone;
-    char *search;
+    const char *search;
 
     if ((search = FindSearch(filename)) != NULL) {
 	char *newname = NULL;

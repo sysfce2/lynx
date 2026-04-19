@@ -1,9 +1,9 @@
 /*
- * $LynxId: userdefs.h,v 1.425 2025/09/17 23:31:59 tom Exp $
+ * $LynxId: userdefs.h,v 1.427 2026/04/19 18:24:51 tom Exp $
  *
  * Lynx - Hypertext navigation system
  *
- *   Copyright 1996-2024,2025 Thomas E. Dickey and Lynx Developers Group
+ *   Copyright 1996-2025,2026 Thomas E. Dickey and Lynx Developers Group
  *   Note: GNU General Public License is not a copyright.
  *
  *   (c) Copyright 1992, 1993, 1994 University of Kansas
@@ -1459,10 +1459,10 @@
  */
 
 #define LYNX_NAME     "Lynx"
-#define LYNX_VERSION  "2.9.2u"
+#define LYNX_VERSION  "2.9.2w"
 #define LYNX_WWW_HOME "https://lynx.invisible-island.net/"
 #define LYNX_WWW_DIST "https://lynx.invisible-island.net/current/"
-#define LYNX_DATE     "17 Sep 2025"
+#define LYNX_DATE     "19 Apr 2026"
 
 #ifdef UNICODE
 #define W32_STRING(s) L##s

@@ -1,9 +1,9 @@
--- $LynxId: CHANGES,v 1.1252 2025/10/27 08:02:50 tom Exp $
+-- $LynxId: CHANGES,v 1.1255 2026/04/19 18:27:26 tom Exp $
 ===============================================================================
 Changes since Lynx 2.8 release
 ===============================================================================
 
-2025-09-17 (2.9.2u)
+2026-04-19 (2.9.2w)
 * add a null pointer check to MakeFormAction (Debian #1119084) -TD
 * do not report the case of a SELECT tag not within a FORM as Bad HTML (report
   by Jindrich Kolorenc) -TD
@@ -41,7 +41,7 @@ Changes since Lynx 2.8 release
 * correct sprintf-format used for gopher telnet connections -Ben Collver
 * fix stricter gcc15 warnings -TD
 * update config.guess (2024-07-28), config.sub (2024-06-03)
-* add ka.po from
+* update nl.po, add ka.po, kab.po from
     http://translationproject.org/latest/lynx
 * add support for zstd encoding / compression (patch by Steffen Nurpmeso).
 * changes to configure script:

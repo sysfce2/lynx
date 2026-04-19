@@ -1,5 +1,5 @@
 /*
- * $LynxId: LYUtils.c,v 1.312 2025/07/24 21:06:56 tom Exp $
+ * $LynxId: LYUtils.c,v 1.313 2026/04/19 22:52:15 tom Exp $
  */
 #include <HTUtils.h>
 #include <HTTCP.h>
@@ -2935,7 +2935,8 @@ BOOLEAN inlocaldomain(void)
     int n;
     FILE *fp;
     struct utmp me;
-    char *cp, *mytty = NULL;
+    char *cp;
+    const char *mytty = NULL;
 
     if ((cp = ttyname(0))) {
 	mytty = cp;
@@ -5766,7 +5767,7 @@ static BOOL IsOurSymlink(const char *name)
     }
     if (buffer != NULL) {
 	if (!LYisAbsPath(buffer)) {
-	    char *cutoff = LYLastPathSep(name);
+	    const char *cutoff = LYLastPathSep(name);
 	    char *clone = NULL;
 
 	    if (cutoff != NULL) {
@@ -6964,9 +6965,9 @@ void LYAddPathSep0(char *path)
 /*
  * Check if a given string contains a path separator
  */
-char *LYLastPathSep(const char *path)
+const char *LYLastPathSep(const char *path)
 {
-    char *result;
+    const char *result;
 
 #if defined(USE_DOS_DRIVES)
     if ((result = strrchr(path, '\\')) == 0)

@@ -1,4 +1,4 @@
-dnl $LynxId: configure.in,v 1.411 2025/09/17 22:50:45 tom Exp $
+dnl $LynxId: configure.in,v 1.414 2026/04/19 21:30:10 tom Exp $
 dnl
 dnl Process this file with autoconf to produce a configure script.
 dnl
@@ -7,7 +7,7 @@ dnl by T.E.Dickey <dickey@invisible-island.net>
 dnl and Jim Spath <jspath@mail.bcpl.lib.md.us>
 dnl
 dnl ---------------------------------------------------------------------------
-dnl Copyright 1997-2024,2025 by Thomas E. Dickey
+dnl Copyright 1997-2025,2026 by Thomas E. Dickey
 dnl
 dnl Permission is hereby granted, free of charge, to any person obtaining a
 dnl copy of this software and associated documentation files (the
@@ -34,10 +34,10 @@ dnl sale, use or other dealings in this Software without prior written
 dnl authorization.
 dnl ---------------------------------------------------------------------------
 dnl
-AC_REVISION($Revision: 1.411 $)
+AC_REVISION($Revision: 1.414 $)
 
 AC_PREREQ(2.52.20231210)
-AC_INIT(lynx,2.9.2u,lynx-dev@nongnu.org)
+AC_INIT(lynx,2.9.2w,lynx-dev@nongnu.org)
 
 AC_CONFIG_SRCDIR(userdefs.h)
 
@@ -349,7 +349,6 @@ case "$host_os" in
 	;;
 esac
 
-CF_ANSI_CC_REQD
 CF_XOPEN_SOURCE(500,199506L)
 CF_LARGEFILE
 CF_LINK_PREFIX

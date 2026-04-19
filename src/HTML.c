@@ -1,5 +1,5 @@
 /*
- * $LynxId: HTML.c,v 1.207 2025/10/24 08:13:09 tom Exp $
+ * $LynxId: HTML.c,v 1.208 2026/04/19 22:50:20 tom Exp $
  *
  *		Structured stream to Rich hypertext converter
  *		============================================
@@ -8094,7 +8094,7 @@ int HTLoadError(HTStream *sink GCC_UNUSED, int number,
 
 static char *MakeNewTitle(STRING2PTR value, int src_type)
 {
-    char *ptr;
+    const char *ptr;
     char *newtitle = NULL;
 
     StrAllocCopy(newtitle, "[");
@@ -8136,7 +8136,7 @@ static char *MakeNewTitle(STRING2PTR value, int src_type)
 
 static char *MakeNewImageValue(STRING2PTR value)
 {
-    char *ptr;
+    const char *ptr;
     char *newtitle = NULL;
 
     StrAllocCopy(newtitle, "[");
@@ -8154,7 +8154,7 @@ static char *MakeNewImageValue(STRING2PTR value)
 
 static char *MakeNewMapValue(STRING2PTR value, const char *mapstr)
 {
-    char *ptr;
+    const char *ptr;
     char *newtitle = NULL;
 
     StrAllocCopy(newtitle, "[");
