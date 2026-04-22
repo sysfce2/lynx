@@ -1,5 +1,5 @@
 /*
- * $LynxId: HTTCP.c,v 1.172 2025/06/19 18:49:10 Eric.Lindblad Exp $
+ * $LynxId: HTTCP.c,v 1.173 2026/04/20 08:14:02 tom Exp $
  *
  *			Generic Communication Code		HTTCP.c
  *			==========================
@@ -724,6 +724,7 @@ static BOOL setup_nsl_fork(void (*really) (const char *,
     long dns_patience = 30;	/* how many seconds will we wait for DNS? */
     int child_exited = 0;
 
+    pfd[0] = pfd[1] = 0;
     memset(&statuses, 0, sizeof(STATUSES));
     statuses.h_errno_valid = NO;
 

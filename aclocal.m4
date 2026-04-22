@@ -1,4 +1,4 @@
-dnl $LynxId: aclocal.m4,v 1.377 2026/04/19 20:46:18 tom Exp $
+dnl $LynxId: aclocal.m4,v 1.379 2026/04/20 22:51:14 tom Exp $
 dnl Macros for auto-configure script.
 dnl by Thomas E. Dickey <dickey@invisible-island.net>
 dnl and Jim Spath <jspath@mail.bcpl.lib.md.us>
@@ -2922,7 +2922,7 @@ if test "$ac_cv_func_lstat" = yes; then
 fi
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_FUNC_SIGACTION version: 4 updated: 2022/12/02 19:55:38
+dnl CF_FUNC_SIGACTION version: 5 updated: 2026/04/20 18:50:04
 dnl -----------------
 dnl Check if we have the sigaction function and related structures.
 AC_DEFUN([CF_FUNC_SIGACTION],[
@@ -2935,7 +2935,7 @@ AC_TRY_LINK([
 #ifdef SA_RESTART
 	act.sa_flags = SA_RESTART;
 #endif /* SA_RESTART */
-	sigaction(1, &act, 0);
+	sigaction(1, &act, (void*)0);
 	],
 	[cf_cv_func_sigaction=yes],
 	[cf_cv_func_sigaction=no])
@@ -2943,7 +2943,7 @@ AC_TRY_LINK([
 test "$cf_cv_func_sigaction" = yes && AC_DEFINE(HAVE_SIGACTION,1,[Define to 1 if we have sigaction])
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_FUNC_VASPRINTF version: 2 updated: 2019/12/31 10:27:03
+dnl CF_FUNC_VASPRINTF version: 3 updated: 2026/04/20 18:50:04
 dnl -----------------
 dnl Check if vasprintf is available, and if it is (or can be) declared.
 AC_DEFUN([CF_FUNC_VASPRINTF],[
@@ -2954,7 +2954,7 @@ AC_CHECK_FUNC(vasprintf,[
 	AC_TRY_COMPILE([
 		#include <stdio.h>
 		],[
-		void *p = (void *)vasprintf; return (p != 0)
+		void *p = (void *)vasprintf; return (p != (void*)0)
 	],[
 		AC_MSG_RESULT(no)
 	],[
@@ -2964,7 +2964,7 @@ AC_CHECK_FUNC(vasprintf,[
 			#include <stdio.h>
 			#endif
 			],[
-			void *p = (void *)vasprintf; return (p != 0)
+			void *p = (void *)vasprintf; return (p != (void*)0)
 		],[
 			AC_MSG_RESULT(yes)
 			CF_APPEND_TEXT(CPPFLAGS,-D_GNU_SOURCE)
@@ -3574,7 +3574,7 @@ AC_DEFUN([CF_HELP_MESSAGE],
 AC_DIVERT_HELP($1)])dnl
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_INET_ADDR version: 7 updated: 2013/10/08 17:47:05
+dnl CF_INET_ADDR version: 8 updated: 2026/04/20 18:50:04
 dnl ------------
 dnl For Lynx, check if the libraries we have found give us inet_aton, or
 dnl inet_addr.  If not, try to find the latter function with -lbind or
@@ -3584,14 +3584,14 @@ dnl
 dnl FIXME: the inner cases will probably need work on the header files.
 AC_DEFUN([CF_INET_ADDR],[
 AC_CACHE_CHECK(for inet_aton function,cf_cv_have_inet_aton,[
-AC_TRY_LINK(CF__INET_HEAD,[inet_aton(0, (struct in_addr *)0)],
+AC_TRY_LINK(CF__INET_HEAD,[inet_aton((void*)0, (struct in_addr *)0)],
     [cf_cv_have_inet_aton=yes],
     [cf_cv_have_inet_aton=no])])
 if test "$cf_cv_have_inet_aton" = yes ; then
     AC_DEFINE(HAVE_INET_ATON,1,[Define to 1 if we have inet_aton])
 else
     AC_CACHE_CHECK(for inet_addr function,cf_cv_have_inet_addr,[
-    AC_TRY_LINK(CF__INET_HEAD,[inet_addr(0)],
+    AC_TRY_LINK(CF__INET_HEAD,[inet_addr((void*)0)],
 	[cf_cv_have_inet_addr=yes],
 	[cf_cv_have_inet_addr=no])])
     if test "$cf_cv_have_inet_addr" = no ; then
@@ -3604,7 +3604,7 @@ else
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-		],[inet_addr(0)],
+		],[inet_addr((void*)0)],
 		    [cf_cv_lib_inet_addr=$cf_inetlib],
 		    [cf_cv_lib_inet_addr=no])
 		LIBS="$cf_save_LIBS"
@@ -4213,7 +4213,7 @@ printf("old\\n");
 	,[$1=no])
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_NCURSES_CONFIG version: 32 updated: 2026/04/19 10:06:00
+dnl CF_NCURSES_CONFIG version: 33 updated: 2026/04/20 18:50:04
 dnl -----------------
 dnl Tie together the configure-script macros for ncurses, preferring these in
 dnl order:
@@ -4279,7 +4279,7 @@ if test "x${PKG_CONFIG:=none}" != xnone; then
 		CF_ADD_LIBS($cf_pkg_libs)
 
 		AC_LINK_IFELSE([AC_LANG_PROGRAM([#include <${cf_cv_ncurses_header:-curses.h}>],
-			[initscr(); mousemask(0,0); tigetstr((char *)0);])],
+			[initscr(); mousemask(0,(void*)0); tigetstr((char *)0);])],
 			[AC_RUN_IFELSE([AC_LANG_SOURCE([#include <${cf_cv_ncurses_header:-curses.h}>
 				int main(void)
 				{ const char *xx = curses_version(); return (xx == (const char*)0); }])],
@@ -4461,7 +4461,7 @@ esac
 
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_NCURSES_LIBS version: 22 updated: 2025/12/22 04:16:14
+dnl CF_NCURSES_LIBS version: 23 updated: 2026/04/20 18:50:04
 dnl ---------------
 dnl Look for the ncurses library.  This is a little complicated on Linux,
 dnl because it may be linked with the gpm (general purpose mouse) library.
@@ -4519,7 +4519,7 @@ if test -n "$cf_ncurses_LIBS" ; then
 		fi
 	done
 	AC_LINK_IFELSE([AC_LANG_PROGRAM([#include <${cf_cv_ncurses_header:-curses.h}>],
-		[initscr(); mousemask(0,0); tigetstr((char *)0);])],
+		[initscr(); mousemask(0,(void*)0); tigetstr((char *)0);])],
 		[AC_MSG_RESULT(yes)],
 		[AC_MSG_RESULT(no)
 		 LIBS="$cf_ncurses_SAVE"])
@@ -7261,7 +7261,7 @@ if test "$with_dmalloc" = yes ; then
 fi
 ])dnl
 dnl ---------------------------------------------------------------------------
-dnl CF_WITH_IDNA version: 13 updated: 2025/07/29 16:47:04
+dnl CF_WITH_IDNA version: 14 updated: 2026/04/20 18:50:04
 dnl ------------
 dnl Check for libidn2, use it if found.  Otherwise, check for libidn, use that.
 dnl
@@ -7273,7 +7273,7 @@ CF_FIND_LINKAGE([
 $ac_includes_default
 #include <idn2.h>
 ],[
-	char *output = 0;
+	char *output = (char*)0;
 	int code = idn2_to_ascii_8z("name", &output, IDN2_USE_STD3_ASCII_RULES);
 	(void) code;
 ],idn2,,[CF_VERBOSE([unsuccessful, will try idn (older)])],,[$LIBICONV])

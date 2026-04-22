@@ -1,9 +1,9 @@
--- $LynxId: CHANGES,v 1.1255 2026/04/19 18:27:26 tom Exp $
+-- $LynxId: CHANGES,v 1.1256 2026/04/22 00:04:41 tom Exp $
 ===============================================================================
 Changes since Lynx 2.8 release
 ===============================================================================
 
-2026-04-19 (2.9.2w)
+2026-04-21 (2.9.2x)
 * add a null pointer check to MakeFormAction (Debian #1119084) -TD
 * do not report the case of a SELECT tag not within a FORM as Bad HTML (report
   by Jindrich Kolorenc) -TD

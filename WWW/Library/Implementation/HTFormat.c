@@ -1,5 +1,5 @@
 /*
- * $LynxId: HTFormat.c,v 1.103 2025/07/25 19:26:58 tom Exp $
+ * $LynxId: HTFormat.c,v 1.104 2026/04/20 08:08:36 tom Exp $
  *
  *		Manage different file formats			HTFormat.c
  *		=============================
@@ -1384,6 +1384,7 @@ static int HTBrFileCopy(FILE *brfp, HTStream *sink)
 
     char *brotli_buffer = NULL;
     char *normal_buffer = NULL;
+    char *checks_buffer;
     size_t brotli_size;
     size_t brotli_limit = 0;
     size_t brotli_offset;
@@ -1406,9 +1407,10 @@ static int HTBrFileCopy(FILE *brfp, HTStream *sink)
 
 	brotli_offset = brotli_limit;
 	brotli_limit += input_chunk;
-	brotli_buffer = realloc(brotli_buffer, brotli_limit);
-	if (brotli_buffer == NULL)
+	checks_buffer = realloc(brotli_buffer, brotli_limit);
+	if (checks_buffer == NULL)
 	    outofmem(__FILE__, THIS_FUNC);
+	brotli_buffer = checks_buffer;
 	status = (int) fread(brotli_buffer + brotli_offset, sizeof(char),
 			     input_chunk, brfp);
 
@@ -1440,9 +1442,10 @@ static int HTBrFileCopy(FILE *brfp, HTStream *sink)
 		normal_limit = (10 * brotli_limit) + INPUT_BUFFER_SIZE;
 	    else
 		normal_limit *= 2;
-	    normal_buffer = realloc(normal_buffer, normal_limit);
-	    if (normal_buffer == NULL)
+	    checks_buffer = realloc(normal_buffer, normal_limit);
+	    if (checks_buffer == NULL)
 		outofmem(__FILE__, THIS_FUNC);
+	    normal_buffer = checks_buffer;
 	    brotli_size = (size_t) bytes;
 	    normal_size = normal_limit;
 	    status2 = BrotliDecoderDecompress(brotli_size,

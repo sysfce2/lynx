@@ -1,5 +1,5 @@
 /*
- * $LynxId: LYCharUtils.c,v 1.141 2025/09/17 22:30:54 tom Exp $
+ * $LynxId: LYCharUtils.c,v 1.142 2026/04/21 00:00:18 tom Exp $
  *
  *  Functions associated with LYCharSets.c and the Lynx version of HTML.c - FM
  *  ==========================================================================
@@ -1176,6 +1176,7 @@ char **LYUCFullyTranslateString(char **str,
 	return str;
     p = *str;
 
+    memset(&T, 0, sizeof(T));
     if (!no_bytetrans) {
 	UCTransParams_clear(&T);
 	UCSetTransParams(&T, cs_from, &LYCharSet_UC[cs_from],

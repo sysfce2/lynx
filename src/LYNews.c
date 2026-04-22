@@ -1,5 +1,5 @@
 /*
- * $LynxId: LYNews.c,v 1.65 2025/06/19 22:04:17 tom Exp $
+ * $LynxId: LYNews.c,v 1.66 2026/04/20 23:01:25 tom Exp $
  */
 #include <HTUtils.h>
 #ifndef DISABLE_NEWS
@@ -438,7 +438,7 @@ char *LYNewsPost(char *newsgroups,
      * contain EUC or SJIS di-bytes).  Otherwise, use the temp file as is.  -
      * FM
      */
-    if (CJKfile[0] != '\0') {
+    if (CJKfile[0] != '\0' && fc != NULL) {
 	if ((fd = fopen(my_tempfile, TXT_R)) != NULL) {
 	    char *buffer = NULL;
 

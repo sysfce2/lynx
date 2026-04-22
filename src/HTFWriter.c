@@ -1,5 +1,5 @@
 /*
- * $LynxId: HTFWriter.c,v 1.135 2025/06/19 18:51:05 Eric.Lindblad Exp $
+ * $LynxId: HTFWriter.c,v 1.136 2026/04/20 23:43:00 tom Exp $
  *
  *		FILE WRITER				HTFWrite.h
  *		===========
@@ -239,10 +239,10 @@ static void decompress_br(HTStream *me)
 #define INPUT_BUFFER_SIZE BUFSIZ
 	char *brotli_buffer = NULL;
 	char *normal_buffer = NULL;
-	size_t brotli_size;
+	size_t brotli_size = 0;
 	size_t brotli_limit = 0;
 	size_t brotli_offset;
-	size_t normal_size;
+	size_t normal_size = 0;
 	size_t normal_limit = 0;
 	BrotliDecoderResult status2 = BROTLI_DECODER_RESULT_ERROR;
 	int status;
@@ -316,8 +316,8 @@ static void decompress_br(HTStream *me)
 			(double) normal_size / (double) brotli_size));
 		fwrite(normal_buffer, sizeof(char), normal_size, fp);
 	    }
-	    free(brotli_buffer);
-	    free(normal_buffer);
+	    FREE(brotli_buffer);
+	    FREE(normal_buffer);
 
 	    LYCloseTempFP(fp);
 

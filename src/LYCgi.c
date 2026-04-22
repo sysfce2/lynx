@@ -1,5 +1,5 @@
 /*
- * $LynxId: LYCgi.c,v 1.75 2025/01/07 23:28:59 tom Exp $
+ * $LynxId: LYCgi.c,v 1.76 2026/04/21 08:03:56 tom Exp $
  *                   Lynx CGI support                              LYCgi.c
  *                   ================
  *
@@ -360,6 +360,7 @@ static int LYLoadCGI(const char *arg,
     } else {
 	HTFormat format_in;
 	HTStream *target = NULL;	/* Unconverted data */
+	int rc1, rc2;
 	int fd1[2], fd2[2];
 	char buf[MAX_LINE];
 	int pid;
@@ -371,10 +372,8 @@ static int LYLoadCGI(const char *arg,
 	int wstatus;
 #endif
 
-	fd1[0] = -1;
-	fd1[1] = -1;
-	fd2[0] = -1;
-	fd2[1] = -1;
+	rc1 = fd1[0] = fd1[1] = -1;
+	rc2 = fd2[0] = fd2[1] = -1;
 
 	if (anAnchor->isHEAD || keep_mime_headers) {
 
@@ -400,16 +399,18 @@ static int LYLoadCGI(const char *arg,
 	    FREE(tmp);
 	    status = HT_NOT_LOADED;
 
-	} else if (anAnchor->post_data && pipe(fd1) < 0) {
+	} else if (anAnchor->post_data && (rc1 = pipe(fd1)) < 0) {
 	    HTAlert(CONNECT_SET_FAILED);
 	    PERROR("pipe() failed");
 	    status = -3;
 
-	} else if (pipe(fd2) < 0) {
+	} else if ((rc2 = pipe(fd2)) < 0) {
 	    HTAlert(CONNECT_SET_FAILED);
 	    PERROR("pipe() failed");
-	    close(fd1[0]);
-	    close(fd1[1]);
+	    if (rc1 >= 0) {
+		close(fd1[0]);
+		close(fd1[1]);
+	    }
 	    status = -3;
 
 	} else {
@@ -439,7 +440,7 @@ static int LYLoadCGI(const char *arg,
 
 		close(fd2[1]);
 
-		if (anAnchor->post_data) {
+		if (anAnchor->post_data && rc1 >= 0) {
 		    ssize_t written;
 		    int remaining, total_written = 0;
 
@@ -564,17 +565,19 @@ static int LYLoadCGI(const char *arg,
 		}
 
 		if (anAnchor->post_data) {	/* post script, read stdin */
-		    close(fd1[1]);
-		    dup2(fd1[0], fileno(stdin));
-		    close(fd1[0]);
+		    if (rc1 >= 0) {
+			close(fd1[1]);
+			dup2(fd1[0], fileno(stdin));
+			close(fd1[0]);
 
-		    /* Build environment variables */
+			/* Build environment variables */
 
-		    add_environment_value("REQUEST_METHOD=POST");
+			add_environment_value("REQUEST_METHOD=POST");
 
-		    HTSprintf0(&post_len, "CONTENT_LENGTH=%d",
-			       BStrLen(anAnchor->post_data));
-		    add_environment_value(post_len);
+			HTSprintf0(&post_len, "CONTENT_LENGTH=%d",
+				   BStrLen(anAnchor->post_data));
+			add_environment_value(post_len);
+		    }
 		} else {
 		    close(fileno(stdin));
 
@@ -683,10 +686,14 @@ static int LYLoadCGI(const char *arg,
 	    } else {		/* and the Ugly */
 		HTAlert(CONNECT_FAILED);
 		PERROR("fork() failed");
-		close(fd1[0]);
-		close(fd1[1]);
-		close(fd2[0]);
-		close(fd2[1]);
+		if (rc1 >= 0) {
+		    close(fd1[0]);
+		    close(fd1[1]);
+		}
+		if (rc2 >= 0) {
+		    close(fd2[0]);
+		    close(fd2[1]);
+		}
 		status = -1;
 	    }
 

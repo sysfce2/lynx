@@ -1,5 +1,5 @@
 /*
- * $LynxId: LYMap.c,v 1.52 2025/01/06 18:35:47 tom Exp $
+ * $LynxId: LYMap.c,v 1.53 2026/04/20 23:57:58 tom Exp $
  *			Lynx Client-side Image MAP Support	       LYMap.c
  *			==================================
  *
@@ -474,7 +474,7 @@ static int LYLoadIMGmap(const char *arg,
 	    StrAllocCopy(redirecting_url, address);
 	    return (HT_REDIRECTING);
 	} else if (WWWDoc.safe ||
-		   (underlying->document && !anAnchor->document &&
+		   (underlying && underlying->document && !anAnchor->document &&
 		    (LYinternal_flag || LYoverride_no_cache))) {
 	    StrAllocCopy(redirecting_url, address);
 	    redirect_post_content = TRUE;

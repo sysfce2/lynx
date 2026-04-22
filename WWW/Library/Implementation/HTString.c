@@ -1,5 +1,5 @@
 /*
- * $LynxId: HTString.c,v 1.86 2025/07/13 20:06:23 tom Exp $
+ * $LynxId: HTString.c,v 1.87 2026/04/21 00:30:54 tom Exp $
  *
  *	Case-independent string comparison		HTString.c
  *
@@ -1417,6 +1417,7 @@ void HTSABCat(bstring **dest, const char *src,
 	     (void *) dest, (const void *) src, len));
     if (src) {
 	unsigned need = (unsigned) (len + 1);
+	char *target;
 
 	if (TRACE_BSTRING) {
 	    CTRACE((tfp, "===    %4d:", len));
@@ -1426,16 +1427,17 @@ void HTSABCat(bstring **dest, const char *src,
 	if (t) {
 	    unsigned length = (unsigned) t->len + need;
 
-	    t->str = typeRealloc(char, t->str, length);
+	    target = typeRealloc(char, t->str, length);
 	} else {
 	    if ((t = typecalloc(bstring)) == NULL)
 		  outofmem(__FILE__, "HTSACat");
 
-	    t->str = typeMallocn(char, need);
+	    target = typeMallocn(char, need);
 	}
-	if (t->str == NULL)
+	if (target == NULL)
 	    outofmem(__FILE__, "HTSACat");
 
+	t->str = target;
 	MemCpy(t->str + t->len, src, len);
 	t->len += len;
 	t->str[t->len] = '\0';

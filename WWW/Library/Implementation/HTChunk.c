@@ -1,5 +1,5 @@
 /*
- * $LynxId: HTChunk.c,v 1.30 2025/01/06 15:34:03 tom Exp $
+ * $LynxId: HTChunk.c,v 1.31 2026/04/20 08:20:08 tom Exp $
  *
  *		Chunk handling:	Flexible arrays
  *		===============================
@@ -43,13 +43,11 @@ HTChunk *HTChunkCreateMayFail(int grow, int failok)
     if (ch == NULL) {
 	if (!failok) {
 	    outofmem(__FILE__, "creation of chunk");
-	} else {
-	    return ch;
 	}
+    } else {
+	HTChunkInit(ch, grow);
+	ch->failok = failok;
     }
-
-    HTChunkInit(ch, grow);
-    ch->failok = failok;
     return ch;
 }
 
@@ -145,9 +143,11 @@ HTChunk *HTChunkPutc2(HTChunk *ch, int c)
     if (ch->size >= ch->allocated) {
 	HTChunk *chunk = HTChunkCreateMayFail(ch->growby, ch->failok);
 
-	ch->next = chunk;
-	ch = chunk;
-	HTChunkPutc(ch, UCH(c));
+	if (chunk != NULL) {
+	    ch->next = chunk;
+	    ch = chunk;
+	    HTChunkPutc(ch, UCH(c));
+	}
     } else {
 	ch->data[ch->size++] = (char) c;
     }
@@ -176,16 +176,16 @@ void HTChunkEnsure(HTChunk *ch, int needed)
  */
 void HTChunkPutb(HTChunk *ch, const char *b, int l)
 {
-    if (l <= 0)
-	return;
-    if (ch->size + l > ch->allocated) {
-	int growby = l - (l % ch->growby) + ch->growby;		/* Round up */
+    if (l > 0 && ch != NULL) {
+	if (ch->size + l > ch->allocated) {
+	    int growby = l - (l % ch->growby) + ch->growby;	/* Round up */
 
-	if (!HTChunkRealloc(ch, growby))
-	    return;
+	    if (!HTChunkRealloc(ch, growby))
+		return;
+	}
+	MemCpy(ch->data + ch->size, b, l);
+	ch->size += l;
     }
-    MemCpy(ch->data + ch->size, b, l);
-    ch->size += l;
 }
 
 /* like above but no realloc: extend to another chunk if necessary */
@@ -302,7 +302,7 @@ void HTChunkPuts(HTChunk *ch, const char *s)
 {
     const char *p;
 
-    if (s != NULL) {
+    if (s != NULL && ch != NULL) {
 	for (p = s; *p; p++) {
 	    if (ch->size >= ch->allocated) {
 		if (!HTChunkRealloc(ch, ch->growby))

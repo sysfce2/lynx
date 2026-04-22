@@ -1,4 +1,4 @@
-/* $LynxId: LYStrings.c,v 1.283 2025/01/06 16:01:29 tom Exp $ */
+/* $LynxId: LYStrings.c,v 1.284 2026/04/21 00:05:44 tom Exp $ */
 #include <HTUtils.h>
 #include <HTCJK.h>
 #include <UCAux.h>
@@ -3279,7 +3279,7 @@ int LYDoEdit(FieldEditor * edit, int ch,
 {
     int i;
     int length;
-    unsigned char uch;
+    unsigned char uch[2];
     int offset;
 
     if ((int) BufAlloc <= 0)
@@ -3308,8 +3308,9 @@ int LYDoEdit(FieldEditor * edit, int ch,
 #endif
 	/* FALLTHRU */
     case LYE_CHAR:
-	uch = UCH(ch);
-	LYEditInsert(edit, &uch, 1, map_active, maxMessage);
+	uch[0] = UCH(ch);
+	uch[1] = 0;
+	LYEditInsert(edit, uch, 1, map_active, maxMessage);
 	return 0;		/* All changes already registered */
 
     case LYE_C1CHAR:

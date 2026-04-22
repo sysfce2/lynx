@@ -3830,7 +3830,7 @@ msgid ""
 "     You can delete links by the 'R' key<br>\n"
 "<ol>\n"
 msgstr ""
-"     Tzemreḍ ad tekkseḍ iseɣwan s tqeffalt 'R'<br>\r\n"
+"     Tzemreḍ ad tekkseḍ iseɣwan s tqeffalt 'R'<br>\n"
 "<ol>\n"
 
 #: src/LYBookmark.c:383

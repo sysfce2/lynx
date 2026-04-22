@@ -1,4 +1,4 @@
-dnl $LynxId: configure.in,v 1.414 2026/04/19 21:30:10 tom Exp $
+dnl $LynxId: configure.in,v 1.416 2026/04/22 00:04:41 tom Exp $
 dnl
 dnl Process this file with autoconf to produce a configure script.
 dnl
@@ -34,10 +34,10 @@ dnl sale, use or other dealings in this Software without prior written
 dnl authorization.
 dnl ---------------------------------------------------------------------------
 dnl
-AC_REVISION($Revision: 1.414 $)
+AC_REVISION($Revision: 1.416 $)
 
 AC_PREREQ(2.52.20231210)
-AC_INIT(lynx,2.9.2w,lynx-dev@nongnu.org)
+AC_INIT(lynx,2.9.2x,lynx-dev@nongnu.org)
 
 AC_CONFIG_SRCDIR(userdefs.h)
 
@@ -816,18 +816,9 @@ AC_REPLACE_FUNCS( \
 )
 
 CF_SRAND(lynx_)
-CF_CHECK_FUNCDECLS([
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-], sleep)
+CF_CHECK_FUNCDECLS([], sleep)
 CF_CHECK_FUNCDECLS([#include <string.h>], strstr)
-CF_CHECK_FUNCDECLS([
-#include <stdio.h>
-#include <grp.h>], getgrgid getgrnam)
+CF_CHECK_FUNCDECLS([#include <grp.h>], getgrgid getgrnam)
 
 dnl --------------------------------------------------------------------------
 dnl Checks for external-data
