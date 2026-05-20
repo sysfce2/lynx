@@ -1,4 +1,4 @@
-/* $LynxId: src1_HTMLDTD.h,v 1.52 2025/09/18 16:14:38 tom Exp $ */
+/* $LynxId: src1_HTMLDTD.h,v 1.53 2026/05/15 08:24:37 tom Exp $ */
 #ifndef src_HTMLDTD_H1
 #define src_HTMLDTD_H1 1
 
@@ -403,7 +403,7 @@ static const attr BUTTON_attr_list[] = {
 	{ "ACCESSKEY"     T(N) },
 	{ "CLEAR"         T(N) },
 	{ "DISABLED"      T(N) },
-	{ "FORMACTION"    T(N) },
+	{ "FORMACTION"    T(h) },
 	{ "NAME"          T(N) },
 	{ "ONBLUR"        T(N) },
 	{ "ONFOCUS"       T(N) },
@@ -731,7 +731,7 @@ static const attr INPUT_attr_list[] = {
 	{ "CLEAR"         T(N) },
 	{ "DISABLED"      T(N) },
 	{ "ERROR"         T(N) },
-	{ "FORMACTION"    T(N) },
+	{ "FORMACTION"    T(h) },
 	{ "HEIGHT"        T(N) },
 	{ "ISMAP"         T(N) },
 	{ "MAX"           T(N) },
@@ -1407,7 +1407,7 @@ static const attr BUTTON_attr[] = {     /* BUTTON attributes */
 	{ "CLEAR"         T(N) },
 	{ "DIR"           T(N) },
 	{ "DISABLED"      T(N) },
-	{ "FORMACTION"    T(N) },
+	{ "FORMACTION"    T(h) },
 	{ "ID"            T(i) },
 	{ "LANG"          T(N) },
 	{ "NAME"          T(N) },
@@ -1707,7 +1707,7 @@ static const attr INPUT_attr[] = {      /* INPUT attributes */
 	{ "DIR"           T(N) },
 	{ "DISABLED"      T(N) },
 	{ "ERROR"         T(N) },
-	{ "FORMACTION"    T(N) },
+	{ "FORMACTION"    T(h) },
 	{ "HEIGHT"        T(N) },
 	{ "ID"            T(i) },
 	{ "ISMAP"         T(N) },

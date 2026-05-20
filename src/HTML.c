@@ -1,5 +1,5 @@
 /*
- * $LynxId: HTML.c,v 1.208 2026/04/19 22:50:20 tom Exp $
+ * $LynxId: HTML.c,v 1.213 2026/05/20 19:28:48 tom Exp $
  *
  *		Structured stream to Rich hypertext converter
  *		============================================
@@ -1082,7 +1082,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	const char *type = "";
 	int ohcode = hcode;
 
-	if (present && present[HTML_INPUT_TYPE] && value[HTML_INPUT_TYPE])
+	if (IsPresent(HTML_INPUT_TYPE) && value[HTML_INPUT_TYPE])
 	    type = value[HTML_INPUT_TYPE];
 
 	hcode = color_style_3(prefix_string, ".type.", type);
@@ -1115,8 +1115,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	break;
 
     case HTML_BASE:
-	if (present && present[HTML_BASE_HREF] && !local_host_only &&
-	    non_empty(value[HTML_BASE_HREF])) {
+	if (!local_host_only && HaveAttrValue(HTML_BASE_HREF)) {
 	    char *base = NULL;
 	    const char *related = NULL;
 
@@ -1219,7 +1218,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 
     case HTML_LINK:
 	intern_flag = FALSE;
-	if (present && present[HTML_LINK_HREF]) {
+	if (IsPresent(HTML_LINK_HREF)) {
 	    CHECK_FOR_INTERN(intern_flag, value[HTML_LINK_HREF]);
 	    /*
 	     * Prepare to do housekeeping on the reference.  - FM
@@ -1239,14 +1238,11 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	     * Handle REV="made" or REV="owner".  - LM & FM
 	     * Handle REL="author" -TD
 	     */
-	    if (present &&
-		((present[HTML_LINK_REV] &&
-		  value[HTML_LINK_REV] &&
-		  (!strcasecomp("made", value[HTML_LINK_REV]) ||
-		   !strcasecomp("owner", value[HTML_LINK_REV]))) ||
-		 (present[HTML_LINK_REL] &&
-		  value[HTML_LINK_REL] &&
-		  (!strcasecomp("author", value[HTML_LINK_REL]))))) {
+	    if ((HaveAttrValue(HTML_LINK_REV) &&
+		 (!strcasecomp("made", value[HTML_LINK_REV]) ||
+		  !strcasecomp("owner", value[HTML_LINK_REV]))) ||
+		(HaveAttrValue(HTML_LINK_REL) &&
+		 (!strcasecomp("author", value[HTML_LINK_REL])))) {
 		/*
 		 * Load the owner element.  - FM
 		 */
@@ -1258,9 +1254,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		 * Load the RevTitle element if a TITLE attribute and value
 		 * are present.  - FM
 		 */
-		if (present && present[HTML_LINK_TITLE] &&
-		    value[HTML_LINK_TITLE] &&
-		    *value[HTML_LINK_TITLE] != '\0') {
+		if (HaveAttrValue(HTML_LINK_TITLE)) {
 		    StrAllocCopy(title, value[HTML_LINK_TITLE]);
 		    TRANSLATE_AND_UNESCAPE_ENTITIES(&title, TRUE, FALSE);
 		    LYTrimHead(title);
@@ -1276,8 +1270,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	     * Handle REL links.  - FM
 	     */
 
-	    if (present &&
-		present[HTML_LINK_REL] && value[HTML_LINK_REL]) {
+	    if (HaveAttrValue(HTML_LINK_REL)) {
 		/*
 		 * Ignore style sheets, for now.  - FM
 		 *
@@ -1377,8 +1370,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		    break;
 		}
 	    }
-	} else if (present &&
-		   present[HTML_LINK_REL] && value[HTML_LINK_REL]) {
+	} else if (HaveAttrValue(HTML_LINK_REL)) {
 	    /*
 	     * If no HREF was specified, handle special REL links with
 	     * self-designated HREFs.  - FM
@@ -1403,8 +1395,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	     * Create a title (link name) from the TITLE value, if present, or
 	     * default to the REL value that was loaded into title.  - FM
 	     */
-	    if (present && present[HTML_LINK_TITLE] &&
-		non_empty(value[HTML_LINK_TITLE])) {
+	    if (HaveAttrValue(HTML_LINK_TITLE)) {
 		StrAllocCopy(title, value[HTML_LINK_TITLE]);
 		TRANSLATE_AND_UNESCAPE_ENTITIES(&title, TRUE, FALSE);
 		LYTrimHead(title);
@@ -1448,8 +1439,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		   charset assumption. - kw */
 		if (dest == me->node_anchor)
 		    dest = NULL;
-		if (present[HTML_LINK_CHARSET] &&
-		    non_empty(value[HTML_LINK_CHARSET])) {
+		if (HaveAttrValue(HTML_LINK_CHARSET)) {
 		    dest_char_set = UCGetLYhndl_byMIME(value[HTML_LINK_CHARSET]);
 		    if (dest_char_set < 0)
 			dest_char_set = UCLYhndl_for_unrec;
@@ -1481,8 +1471,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    if (me->inBoldH == FALSE)
 		HText_appendCharacter(me->text, LY_BOLD_START_CHAR);
 #ifdef USE_COLOR_STYLE
-	    if (present && present[HTML_LINK_CLASS] &&
-		non_empty(value[HTML_LINK_CLASS])) {
+	    if (HaveAttrValue(HTML_LINK_CLASS)) {
 		char *tmp = NULL;
 		int hcode2;
 
@@ -1536,9 +1525,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	/*
 	 * Support HTML 3.0 PROMPT attribute.  - FM
 	 */
-	if (present &&
-	    present[HTML_ISINDEX_PROMPT] &&
-	    non_empty(value[HTML_ISINDEX_PROMPT])) {
+	if (HaveAttrValue(HTML_ISINDEX_PROMPT)) {
 	    StrAllocCopy(temp, value[HTML_ISINDEX_PROMPT]);
 	    TRANSLATE_AND_UNESCAPE_ENTITIES(&temp, TRUE, FALSE);
 	    LYTrimHead(temp);
@@ -1600,15 +1587,13 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	break;
 
     case HTML_FRAME:
-	if (present && present[HTML_FRAME_NAME] &&
-	    non_empty(value[HTML_FRAME_NAME])) {
+	if (HaveAttrValue(HTML_FRAME_NAME)) {
 	    StrAllocCopy(id_string, value[HTML_FRAME_NAME]);
 	    TRANSLATE_AND_UNESCAPE_ENTITIES(&id_string, TRUE, FALSE);
 	    LYTrimHead(id_string);
 	    LYTrimTail(id_string);
 	}
-	if (present && present[HTML_FRAME_SRC] &&
-	    non_empty(value[HTML_FRAME_SRC])) {
+	if (HaveAttrValue(HTML_FRAME_SRC)) {
 	    StrAllocCopy(href, value[HTML_FRAME_SRC]);
 	    LYLegitimizeHREF(me, &href, TRUE, TRUE);
 
@@ -1653,15 +1638,13 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	break;
 
     case HTML_IFRAME:
-	if (present && present[HTML_IFRAME_NAME] &&
-	    non_empty(value[HTML_IFRAME_NAME])) {
+	if (HaveAttrValue(HTML_IFRAME_NAME)) {
 	    StrAllocCopy(id_string, value[HTML_IFRAME_NAME]);
 	    TRANSLATE_AND_UNESCAPE_ENTITIES(&id_string, TRUE, FALSE);
 	    LYTrimHead(id_string);
 	    LYTrimTail(id_string);
 	}
-	if (present && present[HTML_IFRAME_SRC] &&
-	    non_empty(value[HTML_IFRAME_SRC])) {
+	if (HaveAttrValue(HTML_IFRAME_SRC)) {
 	    StrAllocCopy(href, value[HTML_IFRAME_SRC]);
 	    LYLegitimizeHREF(me, &href, TRUE, TRUE);
 
@@ -1740,11 +1723,10 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    UPDATE_STYLE;
 	    me->current_default_alignment = styles[HTML_DCENTER]->alignment;
 	} else if (me->List_Nesting_Level >= 0 &&
-		   !(present && present[HTML_DIV_ALIGN] &&
-		     value[HTML_DIV_ALIGN] &&
+		   !(HaveAttrValue(HTML_DIV_ALIGN) &&
 		     (!strcasecomp(value[HTML_DIV_ALIGN], "center") ||
 		      !strcasecomp(value[HTML_DIV_ALIGN], "right")))) {
-	    if (present && present[HTML_DIV_ALIGN])
+	    if (IsPresent(HTML_DIV_ALIGN))
 		me->current_default_alignment = HT_LEFT;
 	    else if (me->Division_Level == 0)
 		me->current_default_alignment = HT_LEFT;
@@ -1759,8 +1741,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    LYHandlePlike(me, present, value, include, HTML_DIV_ALIGN, TRUE);
 	    me->DivisionAlignments[me->Division_Level] = (short)
 		me->current_default_alignment;
-	} else if (present && present[HTML_DIV_ALIGN] &&
-		   non_empty(value[HTML_DIV_ALIGN])) {
+	} else if (HaveAttrValue(HTML_DIV_ALIGN)) {
 	    if (!strcasecomp(value[HTML_DIV_ALIGN], "center")) {
 		me->DivisionAlignments[me->Division_Level] = HT_CENTER;
 		change_paragraph_style(me, styles[HTML_DCENTER]);
@@ -1841,8 +1822,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    break;
 	}
 
-	if (present && present[HTML_H_ALIGN] &&
-	    non_empty(value[HTML_H_ALIGN])) {
+	if (HaveAttrValue(HTML_H_ALIGN)) {
 	    if (!strcasecomp(value[HTML_H_ALIGN], "center"))
 		change_paragraph_style(me, styles[HTML_HCENTER]);
 	    else if (!strcasecomp(value[HTML_H_ALIGN], "right"))
@@ -1944,7 +1924,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	     * garbage, use that to calculate the width, otherwise use the
 	     * default width.  - FM
 	     */
-	    if (present && present[HTML_HR_ALIGN] && value[HTML_HR_ALIGN]) {
+	    if (HaveAttrValue(HTML_HR_ALIGN)) {
 		if (!strcasecomp(value[HTML_HR_ALIGN], "right")) {
 		    me->sp->style->alignment = HT_RIGHT;
 		} else if (!strcasecomp(value[HTML_HR_ALIGN], "left")) {
@@ -1957,7 +1937,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    }
 	    width = LYcolLimit -
 		me->new_style->leftIndent - me->new_style->rightIndent;
-	    if (present && present[HTML_HR_WIDTH] && value[HTML_HR_WIDTH] &&
+	    if (HaveAttrValue(HTML_HR_WIDTH) &&
 		isdigit(UCH(*value[HTML_HR_WIDTH])) &&
 		value[HTML_HR_WIDTH][strlen(value[HTML_HR_WIDTH]) - 1] == '%') {
 		char *percent = NULL;
@@ -2051,8 +2031,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    HTML_put_character(me, ' ');
 	    CTRACE((tfp, "HTML: Not HT_LEFT.  Using space instead of TAB.\n"));
 
-	} else if ((present[HTML_TAB_TO] &&
-		    non_empty(value[HTML_TAB_TO])) ||
+	} else if (HaveAttrValue(HTML_TAB_TO) ||
 		   (present[HTML_TAB_INDENT] &&
 		    value[HTML_TAB_INDENT] &&
 		    isdigit(UCH(*value[HTML_TAB_INDENT])))) {
@@ -2060,8 +2039,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    int enval = 2;
 
 	    column = HText_getCurrentColumn(me->text);
-	    if (present[HTML_TAB_TO] &&
-		non_empty(value[HTML_TAB_TO])) {
+	    if (HaveAttrValue(HTML_TAB_TO)) {
 		/*
 		 * TO has priority over INDENT if both are present.  - FM
 		 */
@@ -2104,8 +2082,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	 * If we have an ID attribute, save it together with the value of the
 	 * column we've reached.  - FM
 	 */
-	if (present[HTML_TAB_ID] &&
-	    non_empty(value[HTML_TAB_ID])) {
+	if (HaveAttrValue(HTML_TAB_ID)) {
 	    StrAllocCopy(temp, value[HTML_TAB_ID]);
 	    TRANSLATE_AND_UNESCAPE_TO_STD(&temp);
 	    if (*temp)
@@ -2279,15 +2256,13 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    /*
 	     * Indicate the type of NOTE.
 	     */
-	    if (present && present[HTML_NOTE_CLASS] &&
-		value[HTML_NOTE_CLASS] &&
+	    if (HaveAttrValue(HTML_NOTE_CLASS) &&
 		(!strcasecomp(value[HTML_NOTE_CLASS], "CAUTION") ||
 		 !strcasecomp(value[HTML_NOTE_CLASS], "WARNING"))) {
 		StrAllocCopy(note, value[HTML_NOTE_CLASS]);
 		LYUpperCase(note);
 		StrAllocCat(note, ":");
-	    } else if (present && present[HTML_NOTE_ROLE] &&
-		       value[HTML_NOTE_ROLE] &&
+	    } else if (HaveAttrValue(HTML_NOTE_ROLE) &&
 		       (!strcasecomp(value[HTML_NOTE_ROLE], "CAUTION") ||
 			!strcasecomp(value[HTML_NOTE_ROLE], "WARNING"))) {
 		StrAllocCopy(note, value[HTML_NOTE_ROLE]);
@@ -2326,15 +2301,15 @@ static int HTML_start_element(HTStructured * me, int element_number,
     case HTML_DL:
 	me->List_Nesting_Level++;	/* increment the List nesting level */
 	if (me->List_Nesting_Level <= 0) {
-	    change_paragraph_style(me, present && present[HTML_DL_COMPACT]
+	    change_paragraph_style(me, IsPresent(HTML_DL_COMPACT)
 				   ? styles[HTML_DLC] : styles[HTML_DL]);
 
 	} else if (me->List_Nesting_Level >= 6) {
-	    change_paragraph_style(me, present && present[HTML_DL_COMPACT]
+	    change_paragraph_style(me, IsPresent(HTML_DL_COMPACT)
 				   ? styles[HTML_DLC6] : styles[HTML_DL6]);
 
 	} else {
-	    change_paragraph_style(me, present && present[HTML_DL_COMPACT]
+	    change_paragraph_style(me, IsPresent(HTML_DL_COMPACT)
 				   ? styles[(HTML_DLC1 - 1) + me->List_Nesting_Level]
 				   : styles[(HTML_DL1 - 1) + me->List_Nesting_Level]);
 	}
@@ -2415,7 +2390,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	 * Check whether we have a starting sequence number, or want to
 	 * continue the numbering from a previous OL in this nest.  - FM
 	 */
-	if (present && (present[HTML_OL_SEQNUM] || present[HTML_OL_START])) {
+	if (IsPresent(HTML_OL_SEQNUM) || IsPresent(HTML_OL_START)) {
 	    int seqnum;
 
 	    /*
@@ -2424,11 +2399,9 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	     * developers didn't read the HTML 3.0 specs before re-inventing
 	     * the "wheel" as "we'll").  - FM
 	     */
-	    if (present[HTML_OL_SEQNUM] &&
-		non_empty(value[HTML_OL_SEQNUM])) {
+	    if (HaveAttrValue(HTML_OL_SEQNUM)) {
 		seqnum = atoi(value[HTML_OL_SEQNUM]);
-	    } else if (present[HTML_OL_START] &&
-		       non_empty(value[HTML_OL_START])) {
+	    } else if (HaveAttrValue(HTML_OL_START)) {
 		seqnum = atoi(value[HTML_OL_START]);
 	    } else {
 		seqnum = 1;
@@ -2470,14 +2443,14 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    me->OL_Counter[(me->List_Nesting_Level < 11 ?
 			    me->List_Nesting_Level + 1 : 11)] = seqnum;
 
-	} else if (present && present[HTML_OL_CONTINUE]) {
+	} else if (IsPresent(HTML_OL_CONTINUE)) {
 	    me->OL_Counter[me->List_Nesting_Level < 11 ?
 			   me->List_Nesting_Level + 1 : 11] = OL_CONTINUE;
 
 	} else {
 	    me->OL_Counter[(me->List_Nesting_Level < 11 ?
 			    me->List_Nesting_Level + 1 : 11)] = 1;
-	    if (present && present[HTML_OL_TYPE] && value[HTML_OL_TYPE]) {
+	    if (HaveAttrValue(HTML_OL_TYPE)) {
 		if (*value[HTML_OL_TYPE] == 'A') {
 		    me->OL_Type[(me->List_Nesting_Level < 11 ?
 				 me->List_Nesting_Level + 1 : 11)] = 'A';
@@ -2513,8 +2486,8 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	me->List_Nesting_Level++;
 
 	if (me->List_Nesting_Level <= 0) {
-	    if (!(present && present[HTML_UL_PLAIN]) &&
-		!(present && present[HTML_UL_TYPE] &&
+	    if (!(IsPresent(HTML_UL_PLAIN)) &&
+		!(IsPresent(HTML_UL_TYPE) &&
 		  value[HTML_UL_TYPE] &&
 		  0 == strcasecomp(value[HTML_UL_TYPE], "PLAIN"))) {
 		change_paragraph_style(me, styles[ElementNumber]);
@@ -2524,8 +2497,8 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    }
 
 	} else if (me->List_Nesting_Level >= 6) {
-	    if (!(present && present[HTML_UL_PLAIN]) &&
-		!(present && present[HTML_UL_TYPE] &&
+	    if (!(IsPresent(HTML_UL_PLAIN)) &&
+		!(IsPresent(HTML_UL_TYPE) &&
 		  value[HTML_UL_TYPE] &&
 		  0 == strcasecomp(value[HTML_UL_TYPE], "PLAIN"))) {
 		change_paragraph_style(me, styles[HTML_OL6]);
@@ -2535,8 +2508,8 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    }
 
 	} else {
-	    if (!(present && present[HTML_UL_PLAIN]) &&
-		!(present && present[HTML_UL_TYPE] &&
+	    if (!(IsPresent(HTML_UL_PLAIN)) &&
+		!(IsPresent(HTML_UL_TYPE) &&
 		  value[HTML_UL_TYPE] &&
 		  0 == strcasecomp(value[HTML_UL_TYPE], "PLAIN"))) {
 		change_paragraph_style(me,
@@ -2605,7 +2578,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 
 		counter = me->List_Nesting_Level < 11 ?
 		    me->List_Nesting_Level : 11;
-		if (present && present[HTML_LI_TYPE] && value[HTML_LI_TYPE]) {
+		if (HaveAttrValue(HTML_LI_TYPE)) {
 		    if (*value[HTML_LI_TYPE] == '1') {
 			me->OL_Type[counter] = '1';
 		    } else if (*value[HTML_LI_TYPE] == 'A') {
@@ -2618,9 +2591,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 			me->OL_Type[counter] = 'i';
 		    }
 		}
-		if (present && present[HTML_LI_VALUE] &&
-		    ((value[HTML_LI_VALUE] != NULL) &&
-		     (*value[HTML_LI_VALUE] != '\0')) &&
+		if (HaveAttrValue(HTML_LI_VALUE) &&
 		    ((isdigit(UCH(*value[HTML_LI_VALUE]))) ||
 		     (*value[HTML_LI_VALUE] == '-' &&
 		      isdigit(UCH(*(value[HTML_LI_VALUE] + 1)))))) {
@@ -2785,7 +2756,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	 * only looking for image maps, without pushing anything on the style
 	 * stack.  - kw
 	 */
-	if (me->map_address && present && present[HTML_A_COORDS])
+	if (me->map_address && IsPresent(HTML_A_COORDS))
 	    LYStartArea(me,
 			present[HTML_A_HREF] ? value[HTML_A_HREF] : NULL,
 			NULL,
@@ -2813,11 +2784,9 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	/*
 	 * Load id_string if we have an ID or NAME.  - FM
 	 */
-	if (present && present[HTML_A_ID] &&
-	    non_empty(value[HTML_A_ID])) {
+	if (HaveAttrValue(HTML_A_ID)) {
 	    StrAllocCopy(id_string, value[HTML_A_ID]);
-	} else if (present && present[HTML_A_NAME] &&
-		   non_empty(value[HTML_A_NAME])) {
+	} else if (HaveAttrValue(HTML_A_NAME)) {
 	    StrAllocCopy(id_string, value[HTML_A_NAME]);
 	}
 	if (id_string)
@@ -2826,7 +2795,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	/*
 	 * Handle the reference.  - FM
 	 */
-	if (present && present[HTML_A_HREF]) {
+	if (IsPresent(HTML_A_HREF)) {
 	    /*
 	     * Set to know we are making the content bold.
 	     */
@@ -2862,7 +2831,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    }
 	}
 
-	if (present && present[HTML_A_TYPE] && value[HTML_A_TYPE]) {
+	if (HaveAttrValue(HTML_A_TYPE)) {
 	    StrAllocCopy(temp, value[HTML_A_TYPE]);
 	    if (!intern_flag &&
 		!strcasecomp(value[HTML_A_TYPE], HTAtom_name(HTInternalLink)) &&
@@ -2890,8 +2859,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	FREE(id_string);
 
 	if (me->CurrentA && present) {
-	    if (present[HTML_A_TITLE] &&
-		non_empty(value[HTML_A_TITLE])) {
+	    if (HaveAttrValue(HTML_A_TITLE)) {
 		StrAllocCopy(title, value[HTML_A_TITLE]);
 		TRANSLATE_AND_UNESCAPE_ENTITIES(&title, TRUE, FALSE);
 		LYTrimHead(title);
@@ -2902,8 +2870,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    }
 	    if (present[HTML_A_ISMAP])
 		dest_ismap = TRUE;
-	    if (present[HTML_A_CHARSET] &&
-		non_empty(value[HTML_A_CHARSET])) {
+	    if (HaveAttrValue(HTML_A_CHARSET)) {
 		/*
 		 * Set up to load the anchor's chartrans structures
 		 * appropriately for the current display character set if it
@@ -2981,7 +2948,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		    dest_ismap = TRUE;
 		    CTRACE((tfp, "HTML: '%s' is an ISMAP script\n",
 			    dest->address));
-		} else if (present && present[HTML_IMG_ISMAP]) {
+		} else if (IsPresent(HTML_IMG_ISMAP)) {
 		    dest_ismap = TRUE;
 		    dest->isISMAPScript = TRUE;
 		    CTRACE((tfp, "HTML: Designating '%s' as an ISMAP script\n",
@@ -2994,8 +2961,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	/*
 	 * If there's a USEMAP, resolve it.  - FM
 	 */
-	if (present && present[HTML_IMG_USEMAP] &&
-	    non_empty(value[HTML_IMG_USEMAP])) {
+	if (HaveAttrValue(HTML_IMG_USEMAP)) {
 	    StrAllocCopy(map_href, value[HTML_IMG_USEMAP]);
 	    CHECK_FOR_INTERN(intern_flag, map_href);
 	    (void) LYLegitimizeHREF(me, &map_href, TRUE, TRUE);
@@ -3046,8 +3012,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	/*
 	 * Check for a TITLE attribute.  - FM
 	 */
-	if (present && present[HTML_IMG_TITLE] &&
-	    non_empty(value[HTML_IMG_TITLE])) {
+	if (HaveAttrValue(HTML_IMG_TITLE)) {
 	    StrAllocCopy(title, value[HTML_IMG_TITLE]);
 	    TRANSLATE_AND_UNESCAPE_ENTITIES(&title, TRUE, FALSE);
 	    LYTrimHead(title);
@@ -3098,8 +3063,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		    } else {
 			StrAllocCopy(alt_string,
 				     (title ? title :
-				      ((present &&
-					present[HTML_IMG_ISOBJECT]) ?
+				      (IsPresent(HTML_IMG_ISOBJECT) ?
 				       "(OBJECT)" :
 				       VERBOSE_IMG(value, HTML_IMG_SRC,
 						   "[INLINE]"))));
@@ -3113,7 +3077,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    FREE(temp);
 
 	} else if ((dest_ismap == TRUE) ||
-		   (me->inA && present && present[HTML_IMG_ISMAP])) {
+		   (me->inA && IsPresent(HTML_IMG_ISMAP))) {
 	    StrAllocCopy(alt_string, (title ? title :
 				      (temp = MakeNewMapValue(value, "ISMAP"))));
 	    FREE(temp);
@@ -3127,8 +3091,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	} else {
 	    if (pseudo_inline_alts || clickable_images)
 		StrAllocCopy(alt_string, (title ? title :
-					  ((present &&
-					    present[HTML_IMG_ISOBJECT]) ?
+					  (IsPresent(HTML_IMG_ISOBJECT) ?
 					   "(OBJECT)" :
 					   VERBOSE_IMG(value, HTML_IMG_SRC,
 						       "[INLINE]"))));
@@ -3148,8 +3111,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	/*
 	 * Check for an ID attribute.  - FM
 	 */
-	if (present && present[HTML_IMG_ID] &&
-	    non_empty(value[HTML_IMG_ID])) {
+	if (HaveAttrValue(HTML_IMG_ID)) {
 	    StrAllocCopy(id_string, value[HTML_IMG_ID]);
 	    TRANSLATE_AND_UNESCAPE_TO_STD(&id_string);
 	    if (*id_string == '\0') {
@@ -3161,8 +3123,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	 * Create links to the SRC for all images, if desired.  - FM
 	 */
 	if (clickable_images &&
-	    present && present[HTML_IMG_SRC] &&
-	    non_empty(value[HTML_IMG_SRC])) {
+	    HaveAttrValue(HTML_IMG_SRC)) {
 	    StrAllocCopy(href, value[HTML_IMG_SRC]);
 	    LYLegitimizeHREF(me, &href, TRUE, TRUE);
 
@@ -3236,8 +3197,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		HTML_put_character(me, '-');
 		FREE(newtitle);
 		StrAllocCopy(alt_string,
-			     ((present &&
-			       present[HTML_IMG_ISOBJECT]) ?
+			     (IsPresent(HTML_IMG_ISOBJECT) ?
 			      ((map_href || dest_ismap) ?
 			       "(IMAGE)" : "(OBJECT)") :
 			      VERBOSE_IMG(value, HTML_IMG_SRC, "[IMAGE]")));
@@ -3289,8 +3249,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		HTML_put_character(me, '-');
 		FREE(newtitle);
 		StrAllocCopy(alt_string,
-			     ((present &&
-			       present[HTML_IMG_ISOBJECT]) ?
+			     (IsPresent(HTML_IMG_ISOBJECT) ?
 			      "(IMAGE)" :
 			      VERBOSE_IMG(value, HTML_IMG_SRC, "[IMAGE]")));
 	    } else {
@@ -3421,11 +3380,9 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	/*
 	 * Load id_string if we have a NAME or ID.  - FM
 	 */
-	if (present && present[HTML_MAP_NAME] &&
-	    non_empty(value[HTML_MAP_NAME])) {
+	if (HaveAttrValue(HTML_MAP_NAME)) {
 	    StrAllocCopy(id_string, value[HTML_MAP_NAME]);
-	} else if (present && present[HTML_MAP_ID] &&
-		   non_empty(value[HTML_MAP_ID])) {
+	} else if (HaveAttrValue(HTML_MAP_ID)) {
 	    StrAllocCopy(id_string, value[HTML_MAP_ID]);
 	}
 	if (id_string) {
@@ -3461,8 +3418,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    StrAllocCat(me->map_address, "#");
 	    StrAllocCat(me->map_address, id_string);
 	    FREE(id_string);
-	    if (present && present[HTML_MAP_TITLE] &&
-		non_empty(value[HTML_MAP_TITLE])) {
+	    if (HaveAttrValue(HTML_MAP_TITLE)) {
 		StrAllocCopy(title, value[HTML_MAP_TITLE]);
 		TRANSLATE_AND_UNESCAPE_ENTITIES(&title, TRUE, FALSE);
 		LYTrimHead(title);
@@ -3478,8 +3434,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 
     case HTML_AREA:
 	if (me->map_address &&
-	    present && present[HTML_AREA_HREF] &&
-	    non_empty(value[HTML_AREA_HREF])) {
+	    HaveAttrValue(HTML_AREA_HREF)) {
 	    /*
 	     * Resolve the HREF.  - FM
 	     */
@@ -3501,11 +3456,9 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    /*
 	     * Check for an ALT.  - FM
 	     */
-	    if (present[HTML_AREA_ALT] &&
-		non_empty(value[HTML_AREA_ALT])) {
+	    if (HaveAttrValue(HTML_AREA_ALT)) {
 		StrAllocCopy(alt_string, value[HTML_AREA_ALT]);
-	    } else if (present[HTML_AREA_TITLE] &&
-		       non_empty(value[HTML_AREA_TITLE])) {
+	    } else if (HaveAttrValue(HTML_AREA_TITLE)) {
 		/*
 		 * Use the TITLE as an ALT.  - FM
 		 */
@@ -3589,24 +3542,21 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		    me->object_shapes = TRUE;
 		if (present[HTML_OBJECT_ISMAP])
 		    me->object_ismap = TRUE;
-		if (present[HTML_OBJECT_USEMAP] &&
-		    non_empty(value[HTML_OBJECT_USEMAP])) {
+		if (HaveAttrValue(HTML_OBJECT_USEMAP)) {
 		    StrAllocCopy(me->object_usemap, value[HTML_OBJECT_USEMAP]);
 		    TRANSLATE_AND_UNESCAPE_TO_STD(&me->object_usemap);
 		    if (*me->object_usemap == '\0') {
 			FREE(me->object_usemap);
 		    }
 		}
-		if (present[HTML_OBJECT_ID] &&
-		    non_empty(value[HTML_OBJECT_ID])) {
+		if (HaveAttrValue(HTML_OBJECT_ID)) {
 		    StrAllocCopy(me->object_id, value[HTML_OBJECT_ID]);
 		    TRANSLATE_AND_UNESCAPE_TO_STD(&me->object_id);
 		    if (*me->object_id == '\0') {
 			FREE(me->object_id);
 		    }
 		}
-		if (present[HTML_OBJECT_TITLE] &&
-		    non_empty(value[HTML_OBJECT_TITLE])) {
+		if (HaveAttrValue(HTML_OBJECT_TITLE)) {
 		    StrAllocCopy(me->object_title, value[HTML_OBJECT_TITLE]);
 		    TRANSLATE_AND_UNESCAPE_ENTITIES(&me->object_title, TRUE, FALSE);
 		    LYTrimHead(me->object_title);
@@ -3615,16 +3565,14 @@ static int HTML_start_element(HTStructured * me, int element_number,
 			FREE(me->object_title);
 		    }
 		}
-		if (present[HTML_OBJECT_DATA] &&
-		    non_empty(value[HTML_OBJECT_DATA])) {
+		if (HaveAttrValue(HTML_OBJECT_DATA)) {
 		    StrAllocCopy(me->object_data, value[HTML_OBJECT_DATA]);
 		    TRANSLATE_AND_UNESCAPE_TO_STD(&me->object_data);
 		    if (*me->object_data == '\0') {
 			FREE(me->object_data);
 		    }
 		}
-		if (present[HTML_OBJECT_TYPE] &&
-		    non_empty(value[HTML_OBJECT_TYPE])) {
+		if (HaveAttrValue(HTML_OBJECT_TYPE)) {
 		    StrAllocCopy(me->object_type, value[HTML_OBJECT_TYPE]);
 		    TRANSLATE_AND_UNESCAPE_ENTITIES(&me->object_type, TRUE, FALSE);
 		    LYTrimHead(me->object_type);
@@ -3633,8 +3581,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 			FREE(me->object_type);
 		    }
 		}
-		if (present[HTML_OBJECT_CLASSID] &&
-		    non_empty(value[HTML_OBJECT_CLASSID])) {
+		if (HaveAttrValue(HTML_OBJECT_CLASSID)) {
 		    StrAllocCopy(me->object_classid,
 				 value[HTML_OBJECT_CLASSID]);
 		    TRANSLATE_AND_UNESCAPE_ENTITIES(&me->object_classid, TRUE, FALSE);
@@ -3644,8 +3591,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 			FREE(me->object_classid);
 		    }
 		}
-		if (present[HTML_OBJECT_CODEBASE] &&
-		    non_empty(value[HTML_OBJECT_CODEBASE])) {
+		if (HaveAttrValue(HTML_OBJECT_CODEBASE)) {
 		    StrAllocCopy(me->object_codebase,
 				 value[HTML_OBJECT_CODEBASE]);
 		    TRANSLATE_AND_UNESCAPE_TO_STD(&me->object_codebase);
@@ -3653,8 +3599,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 			FREE(me->object_codebase);
 		    }
 		}
-		if (present[HTML_OBJECT_CODETYPE] &&
-		    non_empty(value[HTML_OBJECT_CODETYPE])) {
+		if (HaveAttrValue(HTML_OBJECT_CODETYPE)) {
 		    StrAllocCopy(me->object_codetype,
 				 value[HTML_OBJECT_CODETYPE]);
 		    TRANSLATE_AND_UNESCAPE_ENTITIES(&me->object_codetype,
@@ -3666,8 +3611,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 			FREE(me->object_codetype);
 		    }
 		}
-		if (present[HTML_OBJECT_NAME] &&
-		    non_empty(value[HTML_OBJECT_NAME])) {
+		if (HaveAttrValue(HTML_OBJECT_NAME)) {
 		    StrAllocCopy(me->object_name, value[HTML_OBJECT_NAME]);
 		    TRANSLATE_AND_UNESCAPE_ENTITIES(&me->object_name, TRUE, FALSE);
 		    LYTrimHead(me->object_name);
@@ -3761,8 +3705,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 
     case HTML_OVERLAY:
 	if (clickable_images && me->inFIG &&
-	    present && present[HTML_OVERLAY_SRC] &&
-	    non_empty(value[HTML_OVERLAY_SRC])) {
+	    HaveAttrValue(HTML_OVERLAY_SRC)) {
 	    StrAllocCopy(href, value[HTML_OVERLAY_SRC]);
 	    LYLegitimizeHREF(me, &href, TRUE, TRUE);
 	    if (*href) {
@@ -3800,11 +3743,9 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	/*
 	 * Load id_string if we have an ID or NAME.  - FM
 	 */
-	if (present && present[HTML_APPLET_ID] &&
-	    non_empty(value[HTML_APPLET_ID])) {
+	if (HaveAttrValue(HTML_APPLET_ID)) {
 	    StrAllocCopy(id_string, value[HTML_APPLET_ID]);
-	} else if (present && present[HTML_APPLET_NAME] &&
-		   non_empty(value[HTML_APPLET_NAME])) {
+	} else if (HaveAttrValue(HTML_APPLET_NAME)) {
 	    StrAllocCopy(id_string, value[HTML_APPLET_NAME]);
 	}
 	if (id_string) {
@@ -3818,7 +3759,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	 * If there's an ALT string, use it, unless the ALT string is
 	 * zero-length and we are making all sources links.  - FM
 	 */
-	if (present && present[HTML_APPLET_ALT] && value[HTML_APPLET_ALT] &&
+	if (IsPresent(HTML_APPLET_ALT) && value[HTML_APPLET_ALT] &&
 	    (!clickable_images ||
 	     (clickable_images && *value[HTML_APPLET_ALT] != '\0'))) {
 	    StrAllocCopy(alt_string, value[HTML_APPLET_ALT]);
@@ -3846,15 +3787,13 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	/*
 	 * If we're making all sources links, get the source.  - FM
 	 */
-	if (clickable_images && present && present[HTML_APPLET_CODE] &&
-	    non_empty(value[HTML_APPLET_CODE])) {
+	if (clickable_images && HaveAttrValue(HTML_APPLET_CODE)) {
 	    char *base = NULL;
 
 	    /*
 	     * Check for a CODEBASE attribute.  - FM
 	     */
-	    if (present[HTML_APPLET_CODEBASE] &&
-		non_empty(value[HTML_APPLET_CODEBASE])) {
+	    if (HaveAttrValue(HTML_APPLET_CODEBASE)) {
 		StrAllocCopy(base, value[HTML_APPLET_CODEBASE]);
 		LYRemoveBlanks(base);
 		TRANSLATE_AND_UNESCAPE_TO_STD(&base);
@@ -3917,8 +3856,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	/*
 	 * If we're making all sources links, get the source.  - FM
 	 */
-	if (clickable_images && present && present[HTML_BGSOUND_SRC] &&
-	    non_empty(value[HTML_BGSOUND_SRC])) {
+	if (clickable_images && HaveAttrValue(HTML_BGSOUND_SRC)) {
 	    StrAllocCopy(href, value[HTML_BGSOUND_SRC]);
 	    LYLegitimizeHREF(me, &href, TRUE, TRUE);
 	    if (*href == '\0') {
@@ -3963,11 +3901,9 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	/*
 	 * Load id_string if we have an ID or NAME.  - FM
 	 */
-	if (present && present[HTML_EMBED_ID] &&
-	    non_empty(value[HTML_EMBED_ID])) {
+	if (HaveAttrValue(HTML_EMBED_ID)) {
 	    StrAllocCopy(id_string, value[HTML_EMBED_ID]);
-	} else if (present && present[HTML_EMBED_NAME] &&
-		   non_empty(value[HTML_EMBED_NAME])) {
+	} else if (HaveAttrValue(HTML_EMBED_NAME)) {
 	    StrAllocCopy(id_string, value[HTML_EMBED_NAME]);
 	}
 	if (id_string) {
@@ -3982,7 +3918,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	 * If there's an ALT string, use it, unless the ALT string is
 	 * zero-length and we are making all sources links.  - FM
 	 */
-	if (present && present[HTML_EMBED_ALT] && value[HTML_EMBED_ALT] &&
+	if (IsPresent(HTML_EMBED_ALT) && value[HTML_EMBED_ALT] &&
 	    (!clickable_images ||
 	     (clickable_images && *value[HTML_EMBED_ALT] != '\0'))) {
 	    StrAllocCopy(alt_string, value[HTML_EMBED_ALT]);
@@ -4009,8 +3945,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	/*
 	 * If we're making all sources links, get the source.  - FM
 	 */
-	if (clickable_images && present && present[HTML_EMBED_SRC] &&
-	    non_empty(value[HTML_EMBED_SRC])) {
+	if (clickable_images && HaveAttrValue(HTML_EMBED_SRC)) {
 	    StrAllocCopy(href, value[HTML_EMBED_SRC]);
 	    LYLegitimizeHREF(me, &href, TRUE, TRUE);
 	    if (*href) {
@@ -4236,9 +4171,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    I.value_cs = ATTR_CS_IN;
 
 	    UPDATE_STYLE;
-	    if (present &&
-		present[HTML_BUTTON_TYPE] &&
-		value[HTML_BUTTON_TYPE]) {
+	    if (HaveAttrValue(HTML_BUTTON_TYPE)) {
 		if (!strcasecomp(value[HTML_BUTTON_TYPE], "submit") ||
 		    !strcasecomp(value[HTML_BUTTON_TYPE], "reset")) {
 		    /*
@@ -4275,8 +4208,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    }
 	    HTML_put_character(me, '(');
 
-	    if (!(present && present[HTML_BUTTON_NAME] &&
-		  value[HTML_BUTTON_NAME])) {
+	    if (!(HaveAttrValue(HTML_BUTTON_NAME))) {
 		I.name = "";
 	    } else if (StrChr(value[HTML_BUTTON_NAME], '&') == NULL) {
 		I.name = value[HTML_BUTTON_NAME];
@@ -4286,8 +4218,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		I.name = I_name;
 	    }
 
-	    if (present && present[HTML_BUTTON_VALUE] &&
-		non_empty(value[HTML_BUTTON_VALUE])) {
+	    if (HaveAttrValue(HTML_BUTTON_VALUE)) {
 		/*
 		 * Convert any HTML entities or decimal escaping.  - FM
 		 */
@@ -4311,25 +4242,29 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		StrAllocCopy(I.value, "BUTTON");
 	    }
 
-	    if (present && present[HTML_BUTTON_READONLY])
+	    if (IsPresent(HTML_BUTTON_READONLY))
 		I.readonly = YES;
 
-	    if (present && present[HTML_BUTTON_DISABLED])
+	    if (IsPresent(HTML_BUTTON_DISABLED))
 		I.disabled = YES;
 
-	    if (present && present[HTML_BUTTON_CLASS] &&	/* Not yet used. */
-		non_empty(value[HTML_BUTTON_CLASS]))
+	    if (HaveAttrValue(HTML_BUTTON_CLASS))
 		I.iclass = value[HTML_BUTTON_CLASS];
 
-	    if (present && present[HTML_BUTTON_ID] &&
-		non_empty(value[HTML_BUTTON_ID])) {
+	    if (HaveAttrValue(HTML_BUTTON_ID)) {
 		I.id = value[HTML_BUTTON_ID];
 		CHECK_ID(HTML_BUTTON_ID);
 	    }
 
-	    if (present && present[HTML_BUTTON_LANG] &&		/* Not yet used. */
-		non_empty(value[HTML_BUTTON_LANG]))
+	    if (HaveAttrValue(HTML_BUTTON_LANG))
 		I.lang = value[HTML_BUTTON_LANG];
+
+	    if (HaveAttrValue(HTML_BUTTON_FORMACTION)) {
+		StrAllocCopy(I.submit_action, value[HTML_BUTTON_FORMACTION]);
+		LYLegitimizeHREF(me, &I.submit_action, TRUE, TRUE);
+		HTParseALL(&I.submit_action, BaseAddress(me));
+		I.submit_action = ResolveActionLink(me, I.submit_action);
+	    }
 
 	    chars = HText_beginInput(me->text, me->inUnderline, &I);
 	    /*
@@ -4678,7 +4613,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 			       ? value[HTML_INPUT_ACCEPT_CHARSET]
 			       : "UNKNOWN");
 	    }
-	    if (HaveAttrValue(HTML_INPUT_FORMACTION)) {		/* Not yet used. */
+	    if (HaveAttrValue(HTML_INPUT_FORMACTION)) {
 		StrAllocCopy(I.submit_action, value[HTML_INPUT_FORMACTION]);
 		LYLegitimizeHREF(me, &I.submit_action, TRUE, TRUE);
 		HTParseALL(&I.submit_action, BaseAddress(me));
@@ -4856,8 +4791,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	 * Get ready for the value.
 	 */
 	HTChunkClear(&me->textarea);
-	if (present && present[HTML_TEXTAREA_NAME] &&
-	    value[HTML_TEXTAREA_NAME]) {
+	if (HaveAttrValue(HTML_TEXTAREA_NAME)) {
 	    StrAllocCopy(me->textarea_name, value[HTML_TEXTAREA_NAME]);
 	    me->textarea_name_cs = ATTR_CS_IN;
 	    if (StrChr(value[HTML_TEXTAREA_NAME], '&') != NULL) {
@@ -4867,7 +4801,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    StrAllocCopy(me->textarea_name, "");
 	}
 
-	if (present && present[HTML_TEXTAREA_ACCEPT_CHARSET]) {
+	if (IsPresent(HTML_TEXTAREA_ACCEPT_CHARSET)) {
 	    if (value[HTML_TEXTAREA_ACCEPT_CHARSET]) {
 		StrAllocCopy(me->textarea_accept_cs, value[HTML_TEXTAREA_ACCEPT_CHARSET]);
 		TRANSLATE_AND_UNESCAPE_TO_STD(&me->textarea_accept_cs);
@@ -4878,8 +4812,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    FREE(me->textarea_accept_cs);
 	}
 
-	if (present && present[HTML_TEXTAREA_COLS] &&
-	    value[HTML_TEXTAREA_COLS] &&
+	if (HaveAttrValue(HTML_TEXTAREA_COLS) &&
 	    isdigit(UCH(*value[HTML_TEXTAREA_COLS]))) {
 	    me->textarea_cols = atoi(value[HTML_TEXTAREA_COLS]);
 	} else {
@@ -4897,8 +4830,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	}
 	LimitValue(me->textarea_cols, MAX_TEXTAREA_COLS);
 
-	if (present && present[HTML_TEXTAREA_ROWS] &&
-	    value[HTML_TEXTAREA_ROWS] &&
+	if (HaveAttrValue(HTML_TEXTAREA_ROWS) &&
 	    isdigit(UCH(*value[HTML_TEXTAREA_ROWS]))) {
 	    me->textarea_rows = atoi(value[HTML_TEXTAREA_ROWS]);
 	} else {
@@ -4911,15 +4843,14 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	 * unmodifiable in either case.
 	 */
 	me->textarea_readonly = NO;
-	if (present && present[HTML_TEXTAREA_READONLY])
+	if (IsPresent(HTML_TEXTAREA_READONLY))
 	    me->textarea_readonly = YES;
 
 	me->textarea_disabled = NO;
-	if (present && present[HTML_TEXTAREA_DISABLED])
+	if (IsPresent(HTML_TEXTAREA_DISABLED))
 	    me->textarea_disabled = YES;
 
-	if (present && present[HTML_TEXTAREA_ID]
-	    && non_empty(value[HTML_TEXTAREA_ID])) {
+	if (HaveAttrValue(HTML_TEXTAREA_ID)) {
 	    StrAllocCopy(id_string, value[HTML_TEXTAREA_ID]);
 	    TRANSLATE_AND_UNESCAPE_TO_STD(&id_string);
 	    if ((*id_string != '\0') &&
@@ -5032,13 +4963,12 @@ static int HTML_start_element(HTStructured * me, int element_number,
 
 		I.type = "OPTION";
 
-		if ((present && present[HTML_OPTION_SELECTED]) ||
+		if ((IsPresent(HTML_OPTION_SELECTED)) ||
 		    (me->first_option && LYSelectPopups == FALSE &&
 		     HTCurSelectGroupType == F_RADIO_TYPE))
 		    I.checked = YES;
 
-		if (present && present[HTML_OPTION_VALUE] &&
-		    value[HTML_OPTION_VALUE]) {
+		if (HaveAttrValue(HTML_OPTION_VALUE)) {
 		    /*
 		     * Convert any HTML entities or decimal escaping.  - FM
 		     */
@@ -5056,15 +4986,14 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		}
 
 		if (me->select_disabled ||
-		    (0 && present && present[HTML_OPTION_DISABLED])) {
+		    (0 && IsPresent(HTML_OPTION_DISABLED))) {
 		    /* 2009/5/25 - suppress check for "disabled" attribute
 		     * for Debian #525934 -TD
 		     */
 		    I.disabled = YES;
 		}
 
-		if (present && present[HTML_OPTION_ID]
-		    && non_empty(value[HTML_OPTION_ID])) {
+		if (HaveAttrValue(HTML_OPTION_ID)) {
 		    if ((ID_A = HTAnchor_findChildAndLink(me->node_anchor,	/* Parent */
 							  value[HTML_OPTION_ID],	/* Tag */
 							  NULL,		/* Address */
@@ -5106,7 +5035,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	     * Get ready for the next value.
 	     */
 	    HTChunkClear(&me->option);
-	    if ((present && present[HTML_OPTION_SELECTED]) ||
+	    if (IsPresent(HTML_OPTION_SELECTED) ||
 		(me->first_option && LYSelectPopups == FALSE &&
 		 HTCurSelectGroupType == F_RADIO_TYPE))
 		me->LastOptionChecked = TRUE;
@@ -5114,8 +5043,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		me->LastOptionChecked = FALSE;
 	    me->first_option = FALSE;
 
-	    if (present && present[HTML_OPTION_VALUE] &&
-		value[HTML_OPTION_VALUE]) {
+	    if (HaveAttrValue(HTML_OPTION_VALUE)) {
 		if (!I_value) {
 		    /*
 		     * Convert any HTML entities or decimal escaping.  - FM
@@ -5197,8 +5125,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		    "HTML: ****** Maximum nesting of %d divisions/tables exceeded!\n",
 		    MAX_NESTING));
 	}
-	if (present && present[HTML_TABLE_ALIGN] &&
-	    non_empty(value[HTML_TABLE_ALIGN])) {
+	if (HaveAttrValue(HTML_TABLE_ALIGN)) {
 	    if (!strcasecomp(value[HTML_TABLE_ALIGN], "center")) {
 		if (no_table_center) {
 		    me->DivisionAlignments[me->Division_Level] = HT_LEFT;
@@ -5278,7 +5205,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	} else {
 	    me->sp->style->alignment = (short) me->current_default_alignment;
 	}
-	if (present && present[HTML_TR_ALIGN] && value[HTML_TR_ALIGN]) {
+	if (HaveAttrValue(HTML_TR_ALIGN)) {
 	    if (!strcasecomp(value[HTML_TR_ALIGN], "center") &&
 		!(me->List_Nesting_Level >= 0 && !me->inP)) {
 		if (no_table_center)
@@ -5319,7 +5246,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	}
 	UPDATE_STYLE;
 	if (me->inTABLE) {
-	    if (present && present[HTML_TR_ALIGN] && value[HTML_TR_ALIGN]) {
+	    if (HaveAttrValue(HTML_TR_ALIGN)) {
 		if (!strcasecomp(value[HTML_TR_ALIGN], "center")) {
 		    stbl_align = HT_CENTER;
 		} else if (!strcasecomp(value[HTML_TR_ALIGN], "right")) {
@@ -5351,11 +5278,10 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	if (me->inTABLE) {
 	    int span = 1;
 
-	    if (present && present[HTML_COL_SPAN] &&
-		value[HTML_COL_SPAN] &&
+	    if (HaveAttrValue(HTML_COL_SPAN) &&
 		isdigit(UCH(*value[HTML_COL_SPAN])))
 		span = atoi(value[HTML_COL_SPAN]);
-	    if (present && present[HTML_COL_ALIGN] && value[HTML_COL_ALIGN]) {
+	    if (HaveAttrValue(HTML_COL_ALIGN)) {
 		if (!strcasecomp(value[HTML_COL_ALIGN], "center")) {
 		    stbl_align = HT_CENTER;
 		} else if (!strcasecomp(value[HTML_COL_ALIGN], "right")) {
@@ -5391,15 +5317,13 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	{
 	    int colspan = 1, rowspan = 1;
 
-	    if (present && present[HTML_TD_COLSPAN] &&
-		value[HTML_TD_COLSPAN] &&
+	    if (HaveAttrValue(HTML_TD_COLSPAN) &&
 		isdigit(UCH(*value[HTML_TD_COLSPAN])))
 		colspan = atoi(value[HTML_TD_COLSPAN]);
-	    if (present && present[HTML_TD_ROWSPAN] &&
-		value[HTML_TD_ROWSPAN] &&
+	    if (HaveAttrValue(HTML_TD_ROWSPAN) &&
 		isdigit(UCH(*value[HTML_TD_ROWSPAN])))
 		rowspan = atoi(value[HTML_TD_ROWSPAN]);
-	    if (present && present[HTML_TD_ALIGN] && value[HTML_TD_ALIGN]) {
+	    if (HaveAttrValue(HTML_TD_ALIGN)) {
 		if (!strcasecomp(value[HTML_TD_ALIGN], "center")) {
 		    stbl_align = HT_CENTER;
 		} else if (!strcasecomp(value[HTML_TD_ALIGN], "right")) {

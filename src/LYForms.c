@@ -1,4 +1,4 @@
-/* $LynxId: LYForms.c,v 1.120 2025/01/06 16:16:35 tom Exp $ */
+/* $LynxId: LYForms.c,v 1.121 2026/05/18 23:31:45 tom Exp $ */
 #include <HTUtils.h>
 #include <HTCJK.h>
 #include <HTTP.h>
@@ -867,6 +867,8 @@ static int form_getstr(int cur,
 void show_formlink_statusline(const FormInfo * form,
 			      int for_what)
 {
+    const char *which_action = form->submit_action;
+
     switch (form->type) {
     case F_PASSWORD_TYPE:
 	if (FormIsReadonly(form))
@@ -917,8 +919,7 @@ void show_formlink_statusline(const FormInfo * form,
     case F_TEXT_SUBMIT_TYPE:
 	if (FormIsReadonly(form)) {
 	    statusline(FORM_LINK_TEXT_SUBMIT_UNM_MSG);
-	} else if (form->submit_method ==
-		   URL_MAIL_METHOD) {
+	} else if (form->submit_method == URL_MAIL_METHOD) {
 	    if (no_mail)
 		statusline(FORM_LINK_TEXT_SUBMIT_MAILTO_DIS_MSG);
 	    else
@@ -949,8 +950,7 @@ void show_formlink_statusline(const FormInfo * form,
     case F_IMAGE_SUBMIT_TYPE:
 	if (FormIsReadonly(form)) {
 	    statusline(FORM_LINK_SUBMIT_DIS_MSG);
-	} else if (form->submit_method ==
-		   URL_MAIL_METHOD) {
+	} else if (form->submit_method == URL_MAIL_METHOD) {
 	    if (no_mail) {
 		statusline(FORM_LINK_SUBMIT_MAILTO_DIS_MSG);
 	    } else {
@@ -960,7 +960,7 @@ void show_formlink_statusline(const FormInfo * form,
 		    char *submit_str = NULL;
 
 		    StrAllocCopy(submit_str, FORM_LINK_SUBMIT_MAILTO_PREFIX);
-		    StrAllocCat(submit_str, form->submit_action);
+		    StrAllocCat(submit_str, which_action);
 		    statusline(submit_str);
 		    FREE(submit_str);
 		} else {
@@ -974,7 +974,7 @@ void show_formlink_statusline(const FormInfo * form,
 		char *submit_str = NULL;
 
 		StrAllocCopy(submit_str, FORM_LINK_RESUBMIT_PREFIX);
-		StrAllocCat(submit_str, form->submit_action);
+		StrAllocCat(submit_str, which_action);
 		statusline(submit_str);
 		FREE(submit_str);
 	    } else {
@@ -987,7 +987,7 @@ void show_formlink_statusline(const FormInfo * form,
 		char *submit_str = NULL;
 
 		StrAllocCopy(submit_str, FORM_LINK_SUBMIT_PREFIX);
-		StrAllocCat(submit_str, form->submit_action);
+		StrAllocCat(submit_str, which_action);
 		statusline(submit_str);
 		FREE(submit_str);
 	    } else {
@@ -1083,4 +1083,33 @@ void show_formlink_statusline(const FormInfo * form,
 	}
 	break;
     }
+}
+
+const char *ShowFieldType(FieldTypes type)
+{
+    const char *result;
+
+#define CASE(name) case name: result = #name; break
+    switch (type) {
+    default:
+	result = "?";
+	break;
+	CASE(F_UNKNOWN);
+	CASE(F_TEXT_TYPE);
+	CASE(F_PASSWORD_TYPE);
+	CASE(F_CHECKBOX_TYPE);
+	CASE(F_RADIO_TYPE);
+	CASE(F_SUBMIT_TYPE);
+	CASE(F_RESET_TYPE);
+	CASE(F_OPTION_LIST_TYPE);
+	CASE(F_HIDDEN_TYPE);
+	CASE(F_TEXTAREA_TYPE);
+	CASE(F_RANGE_TYPE);
+	CASE(F_FILE_TYPE);
+	CASE(F_TEXT_SUBMIT_TYPE);
+	CASE(F_IMAGE_SUBMIT_TYPE);
+	CASE(F_KEYGEN_TYPE);
+	CASE(F_BUTTON_TYPE);
+    }
+    return result;
 }

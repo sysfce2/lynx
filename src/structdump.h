@@ -1,5 +1,5 @@
 /*
- * $LynxId: structdump.h,v 1.15 2025/11/05 01:37:38 tom Exp $
+ * $LynxId: structdump.h,v 1.16 2026/05/18 23:21:16 tom Exp $
  * Some macros to dump out formatted struct's via the trace file.  -KED
  *
  */
@@ -113,7 +113,7 @@
 		DumpAddress(F, name); \
 		DumpString(F, name); \
 		DumpNumber(F, number); \
-		DumpNumber(F, type); \
+		CTRACE((tfp, FieldFormat("%s"), "type", ShowFieldType((F)->type))); \
 		DumpAddress(F, value); \
 		DumpString(F, value); \
 		DumpAddress(F, orig_value); \
@@ -125,7 +125,7 @@
 		DumpNumber(F, hrange); \
 		DumpNumber(F, lrange); \
 		DumpAddress(F, select_list); \
-		DumpAddress(F, submit_action); \
+		DumpString(F, submit_action); \
 		DumpNumber(F, submit_method); \
 		DumpString(F, submit_enctype); \
 		DumpString(F, submit_title); \

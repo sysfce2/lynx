@@ -1,5 +1,5 @@
 /*
- * $LynxId: GridText.c,v 1.358 2025/10/31 08:15:47 tom Exp $
+ * $LynxId: GridText.c,v 1.359 2026/05/18 23:44:38 tom Exp $
  *
  *		Character grid hypertext object
  *		===============================
@@ -10703,6 +10703,9 @@ int HText_beginInput(HText *text,
      */
     if (I->size && f->size > adjust_marker) {
 	f->size -= adjust_marker;
+    }
+    if (I->submit_action) {
+	f->submit_action = I->submit_action;
     }
     return (f->size);
 }

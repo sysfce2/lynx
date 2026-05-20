@@ -1,5 +1,5 @@
 /*
- * $LynxId: HTForms.h,v 1.36 2025/09/18 20:31:48 tom Exp $
+ * $LynxId: HTForms.h,v 1.38 2026/05/18 23:27:43 tom Exp $
  */
 #ifndef HTFORMS_H
 #define HTFORMS_H
@@ -169,6 +169,7 @@ extern "C" {
 /* in LYForms.c */
     extern void show_formlink_statusline(const FormInfo * form,
 					 int for_what);
+    extern const char *ShowFieldType(FieldTypes type);
 #ifdef __cplusplus
 }
 #endif

@@ -1,9 +1,11 @@
--- $LynxId: CHANGES,v 1.1256 2026/04/22 00:04:41 tom Exp $
+-- $LynxId: CHANGES,v 1.1261 2026/05/20 08:21:27 tom Exp $
 ===============================================================================
 Changes since Lynx 2.8 release
 ===============================================================================
 
-2026-04-21 (2.9.2x)
+2026-05-20 (2.9.2y)
+* implement formaction attribute for button and input tags in forms (report by
+  Henning Haeske) -TD
 * add a null pointer check to MakeFormAction (Debian #1119084) -TD
 * do not report the case of a SELECT tag not within a FORM as Bad HTML (report
   by Jindrich Kolorenc) -TD
