@@ -1,4 +1,4 @@
-dnl $LynxId: configure.in,v 1.418 2026/05/20 20:44:24 tom Exp $
+dnl $LynxId: configure.in,v 1.419 2026/05/25 15:21:00 tom Exp $
 dnl
 dnl Process this file with autoconf to produce a configure script.
 dnl
@@ -34,10 +34,10 @@ dnl sale, use or other dealings in this Software without prior written
 dnl authorization.
 dnl ---------------------------------------------------------------------------
 dnl
-AC_REVISION($Revision: 1.418 $)
+AC_REVISION($Revision: 1.419 $)
 
 AC_PREREQ(2.52.20231210)
-AC_INIT(lynx,2.9.2z,lynx-dev@nongnu.org)
+AC_INIT(lynx,2.9.2za,lynx-dev@nongnu.org)
 
 AC_CONFIG_SRCDIR(userdefs.h)
 

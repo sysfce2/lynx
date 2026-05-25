@@ -1,5 +1,5 @@
 /*
- * $LynxId: HTNews.c,v 1.86 2026/04/19 22:47:35 tom Exp $
+ * $LynxId: HTNews.c,v 1.87 2026/05/25 16:55:26 tom Exp $
  *
  *			NEWS ACCESS				HTNews.c
  *			===========
@@ -19,6 +19,7 @@
 #include <HTTCP.h>
 #include <LYUtils.h>
 #include <LYStrings.h>
+#include <HTCJK.h>
 
 #define NEWS_PORT 119		/* See rfc977 */
 #define SNEWS_PORT 563		/* See Lou Montulli */

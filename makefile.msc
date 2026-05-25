@@ -1,4 +1,4 @@
-# $LynxId: makefile.msc,v 1.31 2018/02/17 17:17:38 tom Exp $
+# $LynxId: makefile.msc,v 1.32 2026/05/25 19:05:11 tom Exp $
 #
 # Makefile for `Lynx' browser for Microsoft Visual C++ 4.2 or later
 #
@@ -168,6 +168,7 @@ OBJS = $(CS_OBJS) \
 	"HTString.obj" \
 	"HTStyle.obj" \
 	"HTTCP.obj" \
+	"HTTLS.obj" \
 	"HTTP.obj" \
 	"HTTelnet.obj" \
 	"HTUU.obj" \
@@ -501,6 +502,9 @@ HTTCP.obj : $(WWW_DIR)\HTTCP.c
 
 HTTelnet.obj : $(WWW_DIR)\HTTelnet.c
 	$(COMPILE) $(WWW_DIR)\HTTelnet.c
+
+HTTLS.obj : $(WWW_DIR)\HTTLS.c
+	$(COMPILE) $(WWW_DIR)\HTTLS.c
 
 HTTP.obj : $(WWW_DIR)\HTTP.c
 	$(COMPILE) $(WWW_DIR)\HTTP.c

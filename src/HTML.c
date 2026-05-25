@@ -1,5 +1,5 @@
 /*
- * $LynxId: HTML.c,v 1.213 2026/05/20 19:28:48 tom Exp $
+ * $LynxId: HTML.c,v 1.214 2026/05/25 16:52:47 tom Exp $
  *
  *		Structured stream to Rich hypertext converter
  *		============================================
@@ -8041,14 +8041,14 @@ static char *MakeNewTitle(STRING2PTR value, int src_type)
 	StrAllocCopy(newtitle, " ");
     } else {
 	/* normal title */
-	ptr = strrchr(newtitle, '.');
-	if (ptr) {
-	    if (AS_casecomp(ptr, ".gif") == 0)
-		*ptr = '\0';
-	    else if (AS_casecomp(ptr, ".jpg") == 0)
-		*ptr = '\0';
-	    else if (AS_casecomp(ptr, ".jpeg") == 0)
-		*ptr = '\0';
+	char *cp = strrchr(newtitle, '.');
+	if (cp) {
+	    if (AS_casecomp(cp, ".gif") == 0)
+		*cp = '\0';
+	    else if (AS_casecomp(cp, ".jpg") == 0)
+		*cp = '\0';
+	    else if (AS_casecomp(cp, ".jpeg") == 0)
+		*cp = '\0';
 	}
 	StrAllocCat(newtitle, "]");
     }
