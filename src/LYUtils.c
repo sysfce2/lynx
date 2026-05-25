@@ -1,5 +1,5 @@
 /*
- * $LynxId: LYUtils.c,v 1.313 2026/04/19 22:52:15 tom Exp $
+ * $LynxId: LYUtils.c,v 1.314 2026/05/25 00:27:54 tom Exp $
  */
 #include <HTUtils.h>
 #include <HTTCP.h>
@@ -521,7 +521,8 @@ static BOOL show_whereis_targets(int flag,
 				      &Offset,
 				      &tLen,
 				      &theData,
-				      target)) {
+				      target,
+				      count == 0)) {
 	int itmp, written, len, y, offset;
 	const char *data;
 	int tlen = (int) strlen(target);

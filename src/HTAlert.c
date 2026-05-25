@@ -1,5 +1,5 @@
 /*
- * $LynxId: HTAlert.c,v 1.108 2026/04/20 22:59:52 tom Exp $
+ * $LynxId: HTAlert.c,v 1.109 2026/05/24 15:16:48 WaitronCharm Exp $
  *
  *	Displaying messages and getting input for Lynx Browser
  *	==========================================================
@@ -58,6 +58,10 @@ void HTAlert(const char *Msg)
 	fprintf(stderr, ALERT_FORMAT, Msg);
 	fputc('\n', stderr);
 	fflush(stderr);
+    }
+
+    if (LYFailOnAlert) {
+	alert_occurred = TRUE;
     }
 
     LYSleepAlert();

@@ -1,5 +1,5 @@
 /*
- * $LynxId: GridText.h,v 1.71 2025/08/03 20:14:37 tom Exp $
+ * $LynxId: GridText.h,v 1.72 2026/05/24 19:12:12 tom Exp $
  *
  * Specialities of GridText as subclass of HText
  */
@@ -143,7 +143,8 @@ US-ASCII control characters <32 which are not defined in Unicode standard
 					   int *offset,
 					   int *tLen,
 					   char **data,
-					   const char *target);
+					   const char *target,
+					   BOOL first);
     extern int HTisDocumentSource(void);
     extern void HTuncache_current_document(void);
 

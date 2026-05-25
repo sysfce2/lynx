@@ -1,5 +1,5 @@
 /*
- * $LynxId: GridText.c,v 1.359 2026/05/18 23:44:38 tom Exp $
+ * $LynxId: GridText.c,v 1.360 2026/05/25 00:36:31 tom Exp $
  *
  *		Character grid hypertext object
  *		===============================
@@ -2264,12 +2264,17 @@ static void display_page(HText *text,
 
 		    } else if (&data[itmp] >= cp) {
 			if (cp == &data[itmp]) {
+			    int x1 = (line->offset
+				      + LYstrExtent2(line->data,
+						     x_off - line->offset));
+
+			    if (line->data[0] == LY_SOFT_NEWLINE) {
+				x1++;
+			    }
 			    /*
 			     * First printable character of target.
 			     */
-			    LYmove((i + title_lines),
-				   line->offset + LYstrExtent2(line->data,
-							       x_off - line->offset));
+			    LYmove((i + title_lines), x1);
 			}
 			/*
 			 * Output all the printable target chars.
@@ -6965,7 +6970,8 @@ BOOL HText_getFirstTargetInLine(HText *text, int line_num,
 				int *offset,
 				int *tLen,
 				char **data,
-				const char *target)
+				const char *target,
+				BOOL first)
 {
     HTLine *line;
     char *LineData;
@@ -7016,6 +7022,9 @@ BOOL HText_getFirstTargetInLine(HText *text, int line_num,
 	 * the allocated data string, and
 	 * return TRUE.  -FM
 	 */
+	if (!first && LineData[0] == LY_SOFT_NEWLINE) {
+	    HitOffset += 1;
+	}
 	*offset = (LineOffset + HitOffset);
 	*tLen = (LenNeeded - HitOffset);
 	StrAllocCopy(*data, cp);

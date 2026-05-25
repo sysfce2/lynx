@@ -1,5 +1,5 @@
 /*
- * $LynxId: LYMain.c,v 1.309 2026/04/19 23:02:20 tom Exp $
+ * $LynxId: LYMain.c,v 1.312 2026/05/24 15:38:20 tom Exp $
  */
 #include <HTUtils.h>
 #include <HTTP.h>
@@ -699,7 +699,7 @@ static char *nonoption = NULL;
 #endif
 
 static BOOL parse_arg(char **arg, unsigned mask, int *countp);
-static GCC_NORETURN void print_help_and_exit(int exit_status);
+static GCC_NORETURN void print_help_and_exit(void);
 static void print_help_strings(const char *name,
 			       const char *help,
 			       const char *value,
@@ -728,6 +728,9 @@ opaque.lss\
 #ifdef USE_DEFAULT_COLORS
 BOOLEAN LYuse_default_colors = TRUE;
 #endif
+
+BOOLEAN LYFailOnAlert = FALSE;
+BOOLEAN alert_occurred = FALSE;
 
 #ifdef __DJGPP__
 static void LY_set_ctrl_break(int setting)
@@ -916,6 +919,10 @@ void reset_signals(void)
 void exit_immediately(int code)
 {
     reset_signals();
+
+    if (LYFailOnAlert && alert_occurred) {
+	code = EXIT_FAILURE;
+    }
     exit(code);
 }
 
@@ -1039,7 +1046,7 @@ int main(int argc,
 	 char **argv)
 {
     int i;			/* indexing variable */
-    int status = 0;		/* exit status */
+    int status = EXIT_SUCCESS;	/* exit status */
     char *temp = NULL;
     const char *ccp;
     char *cp;
@@ -2232,7 +2239,6 @@ int main(int argc,
 	if (persistent_cookies)
 	    LYStoreCookies(LYCookieSaveFile);
 #endif /* USE_PERSISTENT_COOKIES */
-	exit_immediately(status);
     } else {
 	/*
 	 * Start an INTERACTIVE session.  - FM
@@ -2267,9 +2273,10 @@ int main(int argc,
 	}
 #endif
 	cleanup();
-	exit_immediately(status);
     }
 
+    exit_immediately(status);
+    /* NOT REACHED */
     return (status);		/* though redundant, for compiler-warnings */
 }
 
@@ -2799,7 +2806,8 @@ static int get_data_fun(char *next_arg GCC_UNUSED)
 /* -help */
 static int help_fun(char *next_arg GCC_UNUSED)
 {
-    print_help_and_exit(0);
+    print_help_and_exit();
+    /* NOT REACHED */
     return 0;
 }
 
@@ -2817,7 +2825,7 @@ int hiddenlinks_fun(char *next_arg)
 
     if (next_arg != NULL) {
 	if (!LYgetEnum(table, next_arg, &LYHiddenLinks))
-	    print_help_and_exit(-1);
+	    print_help_and_exit();
     } else {
 	LYHiddenLinks = HIDDENLINKS_MERGE;
     }
@@ -3518,7 +3526,7 @@ with -dump, format output as with -traversal, but to stdout"
    ),
    PARSE_FUN(
       "dump",		1|FUNCTION_ARG,		dump_output_fun,
-      "dump the first file to stdout and exit"
+      "dump each parameter (file or URL) to stdout and exit"
    ),
    PARSE_FUN(
       "editor",		4|NEED_FUNCTION_ARG,	editor_fun,
@@ -3545,6 +3553,10 @@ keys (may be incompatible with some curses packages)"
    ),
 #endif
 #endif /* EXEC_LINKS || EXEC_SCRIPTS */
+   PARSE_SET(
+      "fail_on_alert",	4|SET_ARG,		LYFailOnAlert,
+      "exit with error code if any alert is written"
+   ),
 #ifdef VMS
    PARSE_SET(
       "fileversions",	4|SET_ARG,		HTVMSFileVersions,
@@ -4139,7 +4151,7 @@ static void print_help_strings(const char *name,
     fputc('\n', stdout);
 }
 
-static void print_help_and_exit(int exit_status)
+static void print_help_and_exit(void)
 {
     Config_Type *p;
 
@@ -4190,7 +4202,7 @@ in double-quotes (\"-\") on VMS)", NULL, TRUE);
 
     SetOutputMode(O_BINARY);
 
-    exit_immediately(exit_status);
+    exit_immediately(EXIT_SUCCESS);
 }
 
 /*
@@ -4453,7 +4465,7 @@ static BOOL parse_arg(char **argv,
 	pgm = "LYNX";
 
     fprintf(stderr, LY_MSG("%s: Invalid Option: %s\n"), pgm, argv[0]);
-    print_help_and_exit(-1);
+    print_help_and_exit();
     return FALSE;
 }
 

@@ -1,9 +1,13 @@
--- $LynxId: CHANGES,v 1.1261 2026/05/20 08:21:27 tom Exp $
+-- $LynxId: CHANGES,v 1.1265 2026/05/25 00:39:13 tom Exp $
 ===============================================================================
 Changes since Lynx 2.8 release
 ===============================================================================
 
-2026-05-20 (2.9.2y)
+2026-05-24 (2.9.2z)
+* correct position of whereis highlighting in wrapped lines, e.g., in source
+  view (report by Rajeev V Pillai) -TD
+* add option -fail_on_alert (WaitronCharm)
+* review manpage, adding default values for most boolean options -TD
 * implement formaction attribute for button and input tags in forms (report by
   Henning Haeske) -TD
 * add a null pointer check to MakeFormAction (Debian #1119084) -TD

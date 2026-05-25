@@ -1,5 +1,5 @@
 /*
- * $LynxId: LYGlobalDefs.h,v 1.156 2025/07/22 00:28:23 tom Exp $
+ * $LynxId: LYGlobalDefs.h,v 1.157 2026/05/24 15:16:14 WaitronCharm Exp $
  *
  * global variable definitions
  */
@@ -666,6 +666,9 @@ extern "C" {
 #ifdef USE_DEFAULT_COLORS
     extern BOOLEAN LYuse_default_colors;
 #endif
+
+    extern BOOLEAN LYFailOnAlert;
+    extern BOOLEAN alert_occurred;
 
     extern int HTNoDataOK;	/* HT_NO_DATA-is-ok hack */
     extern BOOLEAN FileInitAlreadyDone;
