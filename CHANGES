@@ -1,9 +1,9 @@
--- $LynxId: CHANGES,v 1.1266 2026/05/25 15:21:00 tom Exp $
+-- $LynxId: CHANGES,v 1.1267 2026/05/26 08:24:22 tom Exp $
 ===============================================================================
 Changes since Lynx 2.8 release
 ===============================================================================
 
-2026-05-25 (2.9.2za)
+2026-05-26 (2.9.3)
 * correct position of whereis highlighting in wrapped lines, e.g., in source
   view (report by Rajeev V Pillai) -TD
 * add option -fail_on_alert (WaitronCharm)

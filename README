@@ -1,6 +1,6 @@
                              Lynx README file
 
-Lynx Version 2.9.2 is the latest release (May 2024).
+Lynx Version 2.9.3 is the latest release (May 2026).
 See the CHANGES file for a complete record of all changes and bug fixes.
 New releases are announced on the lynx-dev mailing list (see below).
 
@@ -146,5 +146,5 @@ LYNX-DEV MAILING LIST
 
 ------------------------------------------------------------------------------
 -- vile:txtmode fc=72 noti
--- $LynxId: README,v 1.39 2024/05/29 22:33:17 tom Exp $
+-- $LynxId: README,v 1.40 2026/05/26 08:24:07 tom Exp $
 ------------------------------------------------------------------------------
