@@ -1,9 +1,9 @@
-<!-- $LynxId: Lynx_users_guide.html,v 1.166 2026/05/26 08:24:07 tom Exp $ -->
+<!-- $LynxId: Lynx_users_guide.html,v 1.168 2026/05/31 09:53:22 tom Exp $ -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html>
 <head>
   <meta name="generator" content=
-  "HTML Tidy for HTML5 for Linux version 5.6.0">
+  "HTML Tidy for HTML5 for Linux version 5.8.0">
   <title>Lynx Users Guide v2.9.3</title>
   <link rel="author" href="mailto:lynx-dev@nongnu.org">
   <meta http-equiv="Content-Type" content=
@@ -405,24 +405,24 @@
       <dl>
         <dt>ksh</dt>
 
-        <dd><code>export WWW_HOME=http://www.w3.org/</code>
+        <dd><code>export WWW_HOME=https://www.w3.org/</code>
         </dd>
 
         <dt>csh</dt>
 
-        <dd><code>setenv WWW_HOME http://www.w3.org/</code>
+        <dd><code>setenv WWW_HOME https://www.w3.org/</code>
         </dd>
       </dl>
     </dd>
 
     <dt>VMS</dt>
 
-    <dd><code>define "WWW_HOME" "http://www.w3.org/"</code>
+    <dd><code>define "WWW_HOME" "https://www.w3.org/"</code>
     </dd>
 
     <dt>win32</dt>
 
-    <dd><code>WWW_HOME=http://www.w3.org/ [or in registry]</code>
+    <dd><code>WWW_HOME=https://www.w3.org/ [or in registry]</code>
     </dd>
   </dl>
 
@@ -1244,7 +1244,7 @@
         <dt>IDNA TR46</dt>
 
         <dd>Use IDNA 2008 with the amendments from Unicode <a href=
-        "http://www.unicode.org/reports/tr46">Technical Report
+        "https://www.unicode.org/reports/tr46/">Technical Report
         46</a>.</dd>
 
         <dt>IDNA Compatible</dt>
@@ -2019,7 +2019,7 @@
   <h2 id="id-News"><a name="News" id="News">USENET News posting</a></h2>
 
   <p>While reading <a href=
-  "http://www.w3.org/LineMode/User/AboutNewsServers.html">news</a>
+  "https://www.w3.org/LineMode/User/AboutNewsServers.html">news</a>
   articles with Lynx you should see a link that says <em>Reply to:
   user@host</em> and, if the nntp server from which you received
   the article supports posting from your site, a link that says
@@ -2055,7 +2055,7 @@
   </dl>
 
   <p>See also <a href=
-  "http://www.w3.org/Protocols/rfc977/rfc977">RFC 977</a>.</p>
+  "https://www.w3.org/Protocols/rfc977/rfc977">RFC 977</a>.</p>
 
   <h2 id="id-Bookmarks"><a name="Bookmarks" id="Bookmarks">Lynx
   bookmarks</a></h2>
@@ -2998,7 +2998,7 @@
   of related form submissions, but have the potential for including
   information about the user that might be considered to represent
   an invasion of privacy. NOTE, in this regard, that Lynx has
-  implemented the <a href="http://www.w3.org/Markup/html3/">HTML
+  implemented the <a href="https://www.w3.org/MarkUp/html3/">HTML
   3.0</a> <em>DISABLED</em> attribute for <em>all</em> of its form
   fields. These can be used to keep track of information across
   submissions, and to cast it unmodifiable in the current form, but
@@ -3116,8 +3116,8 @@ the other two cannot be saved between sessions.
 
   <p>Lynx recognizes the TABLE element and all of its associated
   elements as described in <a href=
-  "http://www.faqs.org/rfcs/rfc1942.html">RFC 1942</a> and will
-  process any ID attributes in the start tags for handling as
+  "https://datatracker.ietf.org/doc/html/rfc1942">RFC 1942</a> and
+  will process any ID attributes in the start tags for handling as
   NAME-ed anchors, but does not create actual <em>tables</em>.
   Instead, it treats the TR start tag as a collapsible BR (line
   break), and inserts a collapsible space before the content of
@@ -3192,7 +3192,7 @@ the other two cannot be saved between sessions.
   <h2 id="id-Tabs"><a name="Tabs" id="Tabs">Lynx and HTML Tabs</a></h2>
 
   <p>Lynx implements the <a href=
-  "http://www.w3.org/MarkUp/html3/Contents.html">HTML 3.0</a> TAB
+  "https://www.w3.org/MarkUp/html3/Contents.html">HTML 3.0</a> TAB
   element only when LEFT alignment is in effect. If the alignment
   is CENTER or RIGHT (JUSTIFY is not yet implemented in Lynx, and
   is treated as a synonym for LEFT), or if the TAB element
@@ -3255,7 +3255,7 @@ the other two cannot be saved between sessions.
   <em>banners</em>.</p>
 
   <p>Lynx recognizes and processes all of the <a href=
-  "http://www.w3.org/MarkUp/html3/Contents.html">HTML 3.0</a> REL
+  "https://www.w3.org/MarkUp/html3/Contents.html">HTML 3.0</a> REL
   attribute tokens in LINK elements for creating a <em>banner</em>,
   and a number of others which have subsequently been proposed.
   These <em>banner</em> tokens are</p>
@@ -3316,7 +3316,7 @@ the other two cannot be saved between sessions.
   document are being displayed.</p>
 
   <p>Lynx also recognizes the <a href=
-  "http://www.w3.org/MarkUp/html3/Contents.html">HTML 3.0</a>
+  "https://www.w3.org/MarkUp/html3/Contents.html">HTML 3.0</a>
   BANNER container element, and will create a <em>banner</em> based
   on its content if one has not already been created based on LINK
   elements. Lynx treats the Microsoft MARQUEE element as a synonym
@@ -3335,7 +3335,7 @@ the other two cannot be saved between sessions.
   HTML Footnotes</a></h2>
 
   <p>Lynx implements the <a href=
-  "http://www.w3.org/MarkUp/html3/Contents.html">HTML 3.0</a> FN
+  "https://www.w3.org/MarkUp/html3/Contents.html">HTML 3.0</a> FN
   element similarly to a named <em>A</em>nchor within the current
   document, and assumes that the footnotes will be positioned at
   the bottom of the document. However, in contrast to named
@@ -3368,7 +3368,7 @@ the other two cannot be saved between sessions.
   Notes</a></h2>
 
   <p>Lynx implements the <a href=
-  "http://www.w3.org/MarkUp/html3/Contents.html">HTML 3.0</a> NOTE
+  "https://www.w3.org/MarkUp/html3/Contents.html">HTML 3.0</a> NOTE
   element (<em>Admonishment</em>) as a labeled block, i.e., as if a
   new paragraph were indicated whether or not paragraphing markup
   is included in its content, with greater than normal left and
@@ -3400,21 +3400,21 @@ the other two cannot be saved between sessions.
   Lists</a></h2>
 
   <p>Lynx implements the <a href=
-  "http://www.w3.org/MarkUp/html3/Contents.html">HTML 3.0</a> list
+  "https://www.w3.org/MarkUp/html3/Contents.html">HTML 3.0</a> list
   elements UL (<em>Unordered List</em>), OL (<em>Ordered
   List</em>), and DL (<em>Definition List</em>), and their
   associated attributes, and elements (LH, LI, DT, and DD) for the
   most part as described in that specification. The lists can be
   nested, yielding progressively greater indentation, up to six
   levels. The <a href=
-  "http://www.w3.org/MarkUp/html-spec/html-spec_toc.html">HTML
+  "https://www.w3.org/MarkUp/html-spec/html-spec_toc.html">HTML
   2.0</a> MENU and DIR elements <em>both</em> are treated as
   synonyms for UL with the PLAIN attribute (no <em>bullets</em>,
   see below). Note, thus, that neither DIR nor MENU yields a series
   of columns with 24-character spacing. A single nesting index is
   maintained, so that different types of List elements can be used
   for different levels within the nest. Also, the <a href=
-  "http://www.w3.org/MarkUp/html3/Contents.html">HTML 3.0</a> FIG,
+  "https://www.w3.org/MarkUp/html3/Contents.html">HTML 3.0</a> FIG,
   CAPTION and CREDIT elements are treated as valid within list
   blocks. They will be rendered with indentation appropriate for
   the current nesting depth, and the CAPTION or CREDIT elements
@@ -3470,7 +3470,7 @@ the other two cannot be saved between sessions.
   Quotes</a></h2>
 
   <p>The <a href=
-  "http://www.w3.org/MarkUp/html3/Contents.html">HTML 3.0</a> and
+  "https://www.w3.org/MarkUp/html3/Contents.html">HTML 3.0</a> and
   later specifications provide for two classes of quotation in HTML
   documents. Block quotes, designated by the BLOCKQUOTE element (or
   its abbreviated synonym BQ in HTML 3.0), have implied paragraph
@@ -3573,7 +3573,7 @@ the other two cannot be saved between sessions.
   <em>-ismap</em> command line switch.</p>
 
   <p>Lynx also recognizes the <a href=
-  "http://www.w3.org/MarkUp/html3/Contents.html">HTML 3.0</a> FIG
+  "https://www.w3.org/MarkUp/html3/Contents.html">HTML 3.0</a> FIG
   and OVERLAY elements, and will handle them as intended for text
   clients. These are the ideal way to handle
   <em>client-side-image-maps</em>, because the FIG content provides

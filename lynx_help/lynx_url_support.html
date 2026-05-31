@@ -1,9 +1,9 @@
-<!-- $LynxId: lynx_url_support.html,v 1.38 2025/07/30 23:39:50 tom Exp $ -->
+<!-- $LynxId: lynx_url_support.html,v 1.39 2026/05/31 01:04:04 tom Exp $ -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html>
 <head>
   <meta name="generator" content=
-  "HTML Tidy for HTML5 for Linux version 5.6.0">
+  "HTML Tidy for HTML5 for Linux version 5.8.0">
   <title>URL Schemes Supported in Lynx</title>
   <link rel="author" href="mailto:lynx-dev@nongnu.org">
   <meta http-equiv="Content-Type" content=
@@ -35,34 +35,28 @@
   enumerated below. For more details about URLs (Uniform Resource
   Locators) see <em>RFC1738</em>:</p>
 
-  <ul>
-    <li><a href=
-    "http://www.w3.org/Addressing/rfc1738.txt">http://www.w3.org/Addressing/rfc1738.txt</a></li>
-
-    <li><a href=
-    "ftp://ftp.rfc-editor.org/in-notes/rfc1738.txt">ftp://ftp.rfc-editor.org/in-notes/rfc1738.txt</a></li>
-  </ul>
+  <blockquote>
+    <p><a href=
+    "https://www.w3.org/Addressing/rfc1738.txt">https://www.w3.org/Addressing/rfc1738.txt</a></p>
+  </blockquote>
 
   <p><strong>Lynx</strong> resolves partial or relative URLs in
   documents with respect to the BASE if one was specified,
   otherwise with respect to the document's absolute URL, using the
   rules described in <em>RFC1808</em>:</p>
 
-  <ul>
-    <li><a href=
-    "http://www.w3.org/Addressing/rfc1808.txt">http://www.w3.org/Addressing/rfc1808.txt</a></li>
-
-    <li><a href=
-    "ftp://ftp.rfc-editor.org/in-notes/rfc1808.txt">ftp://ftp.rfc-editor.org/in-notes/rfc1808.txt</a></li>
-  </ul>
+  <blockquote>
+    <p><a href=
+    "https://www.w3.org/Addressing/rfc1808.txt">https://www.w3.org/Addressing/rfc1808.txt</a></p>
+  </blockquote>
 
   <p>and in subsequent drafts of the <em>IETF</em>:</p>
 
-  <ul>
-    <li><a href=
+  <blockquote>
+    <p><a href=
     "https://web.archive.org/web/20130116065936/http://ftp.ics.uci.edu/pub/ietf/uri/">
-    Uniform Resource Identifiers (URI) Working Group</a></li>
-  </ul>
+    Uniform Resource Identifiers (URI) Working Group</a></p>
+  </blockquote>
 
   <p>When entering a URL on the command line to be used as the
   <em>startfile</em>, or at the prompt for a
@@ -544,7 +538,7 @@
   in a <em>?searchpart</em> tack-on to be separated by ampersands,
   as in the original Netscape implementation, and in an equally
   ill-advised IETF draft of that implementation (<a href=
-  "ftp://ftp.isi.edu/internet-drafts/draft-hoffman-mailto-url-03.txt">draft-hoffman-mailto-url-03.txt</a>).
+  "https://datatracker.ietf.org/doc/html/draft-hoffman-file-uri-03">draft-hoffman-mailto-url-03.txt</a>).
   These should be represented as entities (<em>&amp;amp;</em>) in
   the HTML markup. This functionality is generally desired, but the
   IETF backward compatibility principal normally would lead to a
